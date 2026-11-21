@@ -333,16 +333,28 @@
      ============================================================ */
 
   var state = null;
-  var ui = { tab: "practice", step: "basic", importMsg: null, dataMsg: null, confirm: null };
+  var ui = { tab: "practice", step: "basic", dataMsg: null, confirm: null };
   var session = null;
   var tickTimer = null;
   var toastTimer = null;
 
-  function todayKey() {
-    var d = new Date();
+  function ymd(d) {
     var m = String(d.getMonth() + 1).padStart(2, "0");
     var day = String(d.getDate()).padStart(2, "0");
     return d.getFullYear() + "-" + m + "-" + day;
+  }
+
+  function todayKey() { return ymd(new Date()); }
+
+  function daysAgo(n) {
+    var d = new Date();
+    return ymd(new Date(d.getFullYear(), d.getMonth(), d.getDate() - n));
+  }
+
+  function recentDays(n) {
+    var out = [];
+    for (var i = n - 1; i >= 0; i--) out.push(daysAgo(i));
+    return out;
   }
 
   function defaultState() {
@@ -509,13 +521,11 @@
       '<section class="view" id="v-practice"></section>' +
       '<section class="view" id="v-stats" hidden></section>' +
       '<section class="view" id="v-sets" hidden></section>' +
-      '<section class="view" id="v-import" hidden></section>' +
     '</main>' +
     '<nav class="tabbar">' +
       '<button data-act="tab" data-tab="practice" aria-current="true"><span class="ic">🎙️</span>練習</button>' +
       '<button data-act="tab" data-tab="stats"><span class="ic">📈</span>記録</button>' +
       '<button data-act="tab" data-tab="sets"><span class="ic">🗂️</span>セット</button>' +
-      '<button data-act="tab" data-tab="import"><span class="ic">＋</span>追加</button>' +
     '</nav>' +
     '<div class="toast" id="toast" hidden></div>' +
     '<input type="file" id="cheerFile" accept="image/*" hidden>';
@@ -808,10 +818,16 @@
     var t = todayKey();
     var d = state.daily[t] || (state.daily[t] = { sessions: 1, correct: 0, wrong: 0 });
 
+    /* 日ごと × セット × STEP の内訳も残す（記録タブの推移用） */
+    if (!d.sets) d.sets = {};
+    var dset = d.sets[session.setId] ||
+      (d.sets[session.setId] = { basic: { c: 0, w: 0 }, similar: { c: 0, w: 0 } });
+    var cell = dset[session.step] || (dset[session.step] = { c: 0, w: 0 });
+
     if (ok) {
-      st.correct++; st.cleared = true; session.correct++; d.correct++;
+      st.correct++; st.cleared = true; session.correct++; d.correct++; cell.c++;
     } else {
-      st.wrong++; st.cleared = false; session.wrong++; d.wrong++;
+      st.wrong++; st.cleared = false; session.wrong++; d.wrong++; cell.w++;
       session.missed.push(q.id);
     }
     state.lastStudied = t;
@@ -828,61 +844,167 @@
      記録ビュー
      ============================================================ */
 
+  /* ---- 集計ヘルパー ---- */
+
+  function dayTotal(k) {
+    var d = state.daily[k];
+    if (!d) return { c: 0, w: 0, n: 0 };
+    var c = d.correct || 0, w = d.wrong || 0;
+    return { c: c, w: w, n: c + w };
+  }
+
+  function setDayTotal(k, setId) {
+    var d = state.daily[k];
+    var s = d && d.sets && d.sets[setId];
+    if (!s) return { c: 0, w: 0, n: 0 };
+    var c = 0, w = 0;
+    ["basic", "similar"].forEach(function (step) {
+      if (s[step]) { c += s[step].c || 0; w += s[step].w || 0; }
+    });
+    return { c: c, w: w, n: c + w };
+  }
+
+  function streakDays() {
+    var i = dayTotal(todayKey()).n ? 0 : 1; /* 今日まだなら昨日までを数える */
+    var n = 0;
+    for (; i < 400; i++) {
+      if (!dayTotal(daysAgo(i)).n) break;
+      n++;
+    }
+    return n;
+  }
+
+  /* ---- 図 ---- */
+
+  function dailyBars(days, max) {
+    var today = todayKey();
+    return '<div class="vbars">' + days.map(function (k) {
+      var t = dayTotal(k);
+      var h = t.n ? Math.max(5, Math.round(t.n / max * 100)) : 0;
+      var cp = t.n ? Math.round(t.c / t.n * 100) : 0;
+      return '<div class="vbar' + (k === today ? " today" : "") + '" title="' +
+          esc(fmtDate(k) + "　○" + t.c + " ×" + t.w) + '">' +
+        '<span class="col"><span class="stack" style="height:' + h + '%">' +
+          (t.w ? '<i class="w" style="height:' + (100 - cp) + '%"></i>' : "") +
+          (t.c ? '<i class="g" style="height:' + cp + '%"></i>' : "") +
+        '</span></span>' +
+        '<span class="lbl">' + k.slice(8) + '</span>' +
+      '</div>';
+    }).join("") + '</div>';
+  }
+
+  function sparkline(rates) {
+    if (rates.length < 2) return "";
+    var w = 76, h = 24, pad = 3;
+    var step = (w - pad * 2) / (rates.length - 1);
+    var pts = rates.map(function (r, i) {
+      var x = pad + i * step;
+      var y = pad + (100 - r) / 100 * (h - pad * 2);
+      return x.toFixed(1) + "," + y.toFixed(1);
+    });
+    var last = pts[pts.length - 1].split(",");
+    return '<svg class="spark" viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h + '" aria-hidden="true">' +
+      '<polyline points="' + pts.join(" ") + '" fill="none" stroke="var(--accent)" stroke-width="2" ' +
+        'stroke-linecap="round" stroke-linejoin="round"></polyline>' +
+      '<circle cx="' + last[0] + '" cy="' + last[1] + '" r="2.8" fill="var(--accent)" ' +
+        'stroke="var(--surface)" stroke-width="2"></circle>' +
+    '</svg>';
+  }
+
+  function stepMeter(label, done, total) {
+    return '<div class="meter"><span class="m-l">' + label + '</span>' +
+      '<span class="mini-bar"><i class="' + (total && done === total ? "full" : "") +
+        '" style="width:' + pct(done, total) + '%"></i></span>' +
+      '<span class="m-n">' + done + "/" + total + '</span></div>';
+  }
+
+  function setHistory(setId) {
+    var out = [];
+    Object.keys(state.daily).sort().forEach(function (k) {
+      var t = setDayTotal(k, setId);
+      if (t.n) out.push({ k: k, rate: Math.round(t.c / t.n * 100), n: t.n });
+    });
+    return out;
+  }
+
+  function progressRows() {
+    var sets = state.sets.slice().sort(function (a, b) {
+      return String(b.date).localeCompare(String(a.date));
+    });
+    if (!sets.length) return '<p class="empty">セットがありません。</p>';
+    return sets.map(function (s) {
+      var hist = setHistory(s.id).slice(-10);
+      var last = hist.length ? hist[hist.length - 1] : null;
+      var prev = hist.length > 1 ? hist[hist.length - 2] : null;
+      var d = (last && prev) ? last.rate - prev.rate : null;
+      return '<div class="prog-row">' +
+        '<div class="pr-top"><span class="date">' + esc(s.date) + '</span>' +
+          '<span class="t">' + esc(s.title || "レッスンセット") + '</span></div>' +
+        '<div class="pr-steps">' +
+          stepMeter("基本", clearedCount(s.id, "basic"), stepTotal(s.id, "basic")) +
+          stepMeter("類似", clearedCount(s.id, "similar"), stepTotal(s.id, "similar")) +
+        '</div>' +
+        (last
+          ? '<div class="pr-trend">' + sparkline(hist.map(function (x) { return x.rate; })) +
+              '<span class="pr-rate">' + last.rate + '<em>%</em></span>' +
+              (d === null ? "" : '<span class="delta ' + (d > 0 ? "up" : d < 0 ? "down" : "flat") + '">' +
+                (d > 0 ? "▲+" + d : d < 0 ? "▼" + Math.abs(d) : "±0") + '</span>') +
+              '<span class="pr-note">' + fmtDate(last.k) + "の正答率" +
+                (hist.length > 1 ? "（練習した" + hist.length + "日分の推移）" : "") + '</span>' +
+            '</div>'
+          : '<p class="pr-note">まだ練習の記録がありません。</p>') +
+      '</div>';
+    }).join("");
+  }
+
+  function dayTable(days) {
+    var rows = days.slice().reverse().filter(function (k) { return dayTotal(k).n; });
+    if (!rows.length) return '<p class="empty">まだ記録がありません。</p>';
+    return '<table class="daytable"><thead><tr><th>日付</th><th>解答</th><th>正解</th><th>正答率</th></tr></thead><tbody>' +
+      rows.map(function (k) {
+        var t = dayTotal(k);
+        return "<tr><td>" + fmtDate(k) + "</td><td>" + t.n + "</td><td>" + t.c +
+          "</td><td>" + pct(t.c, t.n) + "%</td></tr>";
+      }).join("") + "</tbody></table>";
+  }
+
+  /* ---- 記録タブ ---- */
+
   function renderStats() {
     var el = document.getElementById("v-stats");
-    var days = Object.keys(state.daily).sort().reverse();
-    var totalC = 0, totalW = 0, totalS = 0;
-    days.forEach(function (k) {
-      totalC += state.daily[k].correct || 0;
-      totalW += state.daily[k].wrong || 0;
-      totalS += state.daily[k].sessions || 0;
+    var totalC = 0, totalW = 0;
+    Object.keys(state.daily).forEach(function (k) {
+      var t = dayTotal(k);
+      totalC += t.c; totalW += t.w;
     });
+    var days = recentDays(14);
+    var max = 1;
+    days.forEach(function (k) { var n = dayTotal(k).n; if (n > max) max = n; });
+    var week = 0;
+    recentDays(7).forEach(function (k) { week += dayTotal(k).n; });
+    var hasData = (totalC + totalW) > 0;
 
     var html = '<div class="tiles">' +
-      '<div class="tile"><b>' + totalS + "</b><small>学習回数</small></div>" +
-      '<div class="tile"><b>' + pct(totalC, totalC + totalW) + '%</b><small>通算正解率</small></div>' +
-      '<div class="tile"><b>' + (state.lastStudied ? fmtDate(state.lastStudied) : "—") + "</b><small>最終学習日</small></div>" +
-      "</div>";
+      '<div class="tile"><b>' + streakDays() + '<em>日</em></b><small>連続学習</small></div>' +
+      '<div class="tile"><b>' + week + '<em>問</em></b><small>この7日間</small></div>' +
+      '<div class="tile"><b>' + pct(totalC, totalC + totalW) + '<em>%</em></b><small>通算正答率</small></div>' +
+    '</div>';
 
-    html += '<div class="card stack"><h3>日ごとの記録</h3>';
-    if (!days.length) {
-      html += '<p class="empty">まだ記録がありません。練習をはじめると、ここに日付ごとの正解・不正解が並びます。</p>';
-    } else {
-      var max = 1;
-      days.forEach(function (k) {
-        var v = (state.daily[k].correct || 0) + (state.daily[k].wrong || 0);
-        if (v > max) max = v;
-      });
-      html += '<div class="daily">' + days.slice(0, 21).map(function (k) {
-        var d = state.daily[k];
-        var c = d.correct || 0, w = d.wrong || 0;
-        return '<div class="day"><span class="d">' + fmtDate(k) + "</span>" +
-          '<span class="bar">' +
-            '<i class="g" style="width:' + (pct(c, max)) + '%"></i>' +
-            '<i class="b" style="width:' + (pct(w, max)) + '%"></i>' +
-          "</span>" +
-          '<span class="n">○' + c + " ×" + w + "</span></div>";
-      }).join("") + "</div>" +
-      '<p class="lede" style="margin-top:4px">緑＝正解、赤＝不正解。棒の長さは、いちばん多く解いた日（' + max + '問）を基準にしています。</p>';
-    }
-    html += "</div>";
+    html += '<div class="card stack">' +
+      '<div class="ch-head"><h3>日ごとの練習量</h3>' +
+        '<span class="legend"><i class="g"></i>正解<i class="w"></i>不正解</span></div>' +
+      (hasData
+        ? dailyBars(days, max) +
+          '<p class="lede" style="margin:0">直近14日。棒の高さはその日の解答数（いちばん多い日で ' + max + '問）。</p>' +
+          '<details class="fold"><summary>数字で見る</summary><div class="fold-body">' +
+            dayTable(days) + '</div></details>'
+        : '<p class="empty">まだ記録がありません。練習をはじめると、ここに日ごとの棒が並びます。</p>') +
+    '</div>';
 
-    /* セットごとの達成状況 */
-    html += '<div class="card stack"><h3>セットごとの達成状況</h3>' +
-      (state.sets.length ? state.sets.slice().sort(function (a, b) {
-        return String(b.date).localeCompare(String(a.date));
-      }).map(function (s) {
-        var bc = clearedCount(s.id, "basic"), bt = stepTotal(s.id, "basic");
-        var sc = clearedCount(s.id, "similar"), stt = stepTotal(s.id, "similar");
-        return '<div class="pills" style="align-items:center;gap:8px">' +
-          '<span class="pill" style="border:0;background:transparent;padding-left:0">' + esc(s.date) + "</span>" +
-          '<span class="pill' + (bt && bc === bt ? " done" : "") + '">基本 ' + bc + "/" + bt + "</span>" +
-          '<span class="pill' + (stt && sc === stt ? " done" : "") + '">類似 ' + sc + "/" + stt + "</span>" +
-          "</div>";
-      }).join("") : '<p class="empty">セットがありません。</p>') +
-      "</div>";
+    html += '<div class="card stack"><h3>セットごとの伸び</h3>' +
+      '<p class="lede" style="margin:0">折れ線は、そのセットを練習した日ごとの正答率です。</p>' +
+      progressRows() + '</div>';
 
-    /* 重点復習（全セット） */
     var allFocus = [];
     state.sets.forEach(function (s) {
       focusItems(s.id).forEach(function (f) { f.set = s; allFocus.push(f); });
@@ -898,9 +1020,18 @@
         : '<p class="empty">' + FOCUS_THRESHOLD + "回以上間違えた問題はまだありません。</p>") +
       "</div>";
 
-    html += '<div class="card stack"><h3>設定</h3>' +
+    html += '<div class="card stack">' +
       '<label class="switch"><input type="checkbox" id="autoSpeak"' +
-      (state.settings.autoSpeak ? " checked" : "") + ">正解を表示したら自動で読み上げる</label></div>";
+        (state.settings.autoSpeak ? " checked" : "") + ">正解を表示したら自動で読み上げる</label>" +
+      '<details class="fold"><summary>学習データの書き出し・読み込み</summary><div class="fold-body">' +
+        '<p class="lede" style="margin:0">機種変更やバックアップ用。下の JSON をコピーして保管し、' +
+        '新しい端末で貼り付けて「復元する」を押します。</p>' +
+        '<textarea id="dataText">' + esc(JSON.stringify(state)) + "</textarea>" +
+        '<div class="row"><button class="btn-sm" data-act="copy-data">コピー</button>' +
+        '<button class="btn-sm" data-act="restore-data">この内容で復元する</button></div>' +
+        (ui.dataMsg ? '<div class="msg ' + ui.dataMsg.kind + '">' + esc(ui.dataMsg.text) + "</div>" : "") +
+      '</div></details>' +
+    '</div>';
 
     el.innerHTML = html;
     var cb = document.getElementById("autoSpeak");
@@ -910,10 +1041,6 @@
       toast(cb.checked ? "自動読み上げをオンにしました" : "自動読み上げをオフにしました");
     });
   }
-
-  /* ============================================================
-     セットビュー
-     ============================================================ */
 
   function renderSets() {
     var el = document.getElementById("v-sets");
@@ -948,165 +1075,15 @@
 
     el.innerHTML = html;
   }
-
-  /* ============================================================
-     追加（インポート／エクスポート）
-     ============================================================ */
-
-  var SCHEMA = '{\n' +
-    '  "id": "qq-2026-11-27",            // 重複登録を防ぐ鍵\n' +
-    '  "date": "2026-11-27",\n' +
-    '  "teacher": "講師名",\n' +
-    '  "title": "第5回 ふりかえり",\n' +
-    '  "basic": [\n' +
-    '    { "ja": "日本語の問題", "en": "English answer",\n' +
-    '      "alt": ["別解1", "別解2"], "note": "解説" }\n' +
-    '    // …10問\n' +
-    '  ],\n' +
-    '  "similar": [ /* 同じ形で10問 */ ]\n' +
-    '}';
-
-  function renderImport() {
-    var el = document.getElementById("v-import");
-    var html = '<div class="card stack">' +
-      "<div><h2>新しいレッスンセットを追加</h2>" +
-      '<p class="lede">Claude が作った JSON をそのまま貼り付けて取り込みます。既存の学習データは消えません。' +
-      '同じ id のセットは重複登録されません。</p></div>' +
-      '<textarea id="importText" placeholder=\'{"id":"qq-2026-11-27", "date":"2026-11-27", ...}\'></textarea>' +
-      '<label class="switch"><input type="checkbox" id="overwrite">同じ id のセットは問題文を更新する（進捗は保持）</label>' +
-      '<button class="btn primary" data-act="do-import">取り込む</button>' +
-      (ui.importMsg ? '<div class="msg ' + ui.importMsg.kind + '">' + esc(ui.importMsg.text) + "</div>" : "") +
-      "</div>";
-
-    html += '<div class="card stack"><h3>JSON の形式</h3>' +
-      '<pre class="schema">' + esc(SCHEMA) + "</pre>" +
-      '<button class="btn-sm" data-act="copy-schema">この形式をコピー（Claude に渡す用）</button>' +
-      '<p class="lede">alt と note は省略できます。配列は10問でなくても取り込めます。' +
-      'ja / en は japanese / english、note は explanation などの表記でも読み取ります。</p></div>';
-
-    html += '<div class="card stack"><h3>学習データの書き出し・読み込み</h3>' +
-      '<p class="lede" style="margin:0">機種変更やバックアップ用。下の JSON をコピーして保管し、新しい端末で貼り付けて「読み込む」を押します。</p>' +
-      '<textarea id="dataText">' + esc(JSON.stringify(state)) + "</textarea>" +
-      '<div class="row"><button class="btn-sm" data-act="copy-data">コピー</button>' +
-      '<button class="btn-sm" data-act="restore-data">この内容で復元する</button></div>' +
-      (ui.dataMsg ? '<div class="msg ' + ui.dataMsg.kind + '">' + esc(ui.dataMsg.text) + "</div>" : "") +
-      "</div>";
-
-    el.innerHTML = html;
-  }
-
-  function pickStr() {
-    for (var i = 0; i < arguments.length; i++) {
-      var v = arguments[i];
-      if (typeof v === "string" && v.trim()) return v.trim();
-    }
-    return "";
-  }
-
-  function normalizeQuestions(arr, prefix) {
-    var out = [];
-    if (!Array.isArray(arr)) return out;
-    for (var i = 0; i < arr.length; i++) {
-      var q = arr[i] || {};
-      var ja = pickStr(q.ja, q.japanese, q.jp, q.jaText, q["日本語"], q["問題"]);
-      var en = pickStr(q.en, q.english, q.answer, q.eng, q["英語"], q["模範解答"]);
-      if (!ja || !en) continue;
-      var alt = q.alt || q.alts || q.alternatives || q.alternates || q["別解"] || [];
-      if (typeof alt === "string") alt = [alt];
-      if (!Array.isArray(alt)) alt = [];
-      out.push({
-        id: pickStr(q.id) || prefix + (i + 1),
-        ja: ja,
-        en: en,
-        alt: alt.map(function (a) { return String(a); }).filter(function (a) { return a.trim(); }),
-        note: pickStr(q.note, q.explanation, q.comment, q["解説"])
-      });
-    }
-    return out;
-  }
-
-  function normalizeSet(raw) {
-    if (!raw || typeof raw !== "object") return null;
-    var date = pickStr(raw.date, raw.lessonDate, raw["レッスン日"]) || todayKey();
-    var id = pickStr(raw.id, raw.setId) || "set-" + date;
-    var basic = normalizeQuestions(raw.basic || raw.basics || raw.basicQuestions || raw["基本文"], id + "-b");
-    var similar = normalizeQuestions(raw.similar || raw.similars || raw.similarQuestions || raw["類似問題"], id + "-s");
-    if (!basic.length && !similar.length) return null;
-    return {
-      id: id,
-      date: date,
-      teacher: pickStr(raw.teacher, raw.tutor, raw["講師名"], raw["講師"]) || "未記入",
-      title: pickStr(raw.title, raw.name, raw["タイトル"]) || date + " のセット",
-      basic: basic,
-      similar: similar
-    };
-  }
-
-  function doImport() {
-    var ta = document.getElementById("importText");
-    var ow = document.getElementById("overwrite");
-    var text = ta ? ta.value.trim() : "";
-    if (!text) { ui.importMsg = { kind: "bad", text: "JSON を貼り付けてください。" }; renderImport(); return; }
-
-    var data;
-    try { data = JSON.parse(text); }
-    catch (e) {
-      ui.importMsg = { kind: "bad", text: "JSON として読み取れませんでした。\n" + e.message };
-      renderImport(); return;
-    }
-
-    var list = Array.isArray(data) ? data
-      : (Array.isArray(data.sets) ? data.sets : [data]);
-
-    var added = [], updated = [], skipped = [], bad = 0;
-    list.forEach(function (raw) {
-      var s = normalizeSet(raw);
-      if (!s) { bad++; return; }
-      var exist = getSet(s.id);
-      if (exist) {
-        if (ow && ow.checked) {
-          exist.date = s.date; exist.teacher = s.teacher; exist.title = s.title;
-          exist.basic = s.basic; exist.similar = s.similar;
-          updated.push(s.id);
-        } else {
-          skipped.push(s.id);
-        }
-      } else {
-        state.sets.push(s);
-        added.push(s.id);
-      }
-    });
-
-    if (added.length) {
-      state.currentSetId = added[added.length - 1];
-      ui.step = "basic";
-    }
-    save();
-
-    var msgs = [];
-    if (added.length) msgs.push("追加 " + added.length + " 件（" + added.join(", ") + "）");
-    if (updated.length) msgs.push("更新 " + updated.length + " 件（" + updated.join(", ") + "）");
-    if (skipped.length) msgs.push("重複のためスキップ " + skipped.length + " 件（" + skipped.join(", ") + "）");
-    if (bad) msgs.push("形式が読めなかったセット " + bad + " 件");
-
-    ui.importMsg = {
-      kind: (added.length || updated.length) ? "good" : "bad",
-      text: msgs.length ? msgs.join("\n") : "取り込めるセットが見つかりませんでした。"
-    };
-    if (added.length) { if (ta) ta.value = ""; }
-    render();
-    if (added.length) toast("「" + getSet(state.currentSetId).title + "」に切り替えました");
-  }
-
   function restoreData() {
     var ta = document.getElementById("dataText");
     if (!ta) return;
     var data;
     try { data = JSON.parse(ta.value); }
-    catch (e) { ui.dataMsg = { kind: "bad", text: "JSON として読み取れませんでした。" }; renderImport(); return; }
+    catch (e) { ui.dataMsg = { kind: "bad", text: "JSON として読み取れませんでした。" }; renderStats(); return; }
     if (!data || !Array.isArray(data.sets)) {
       ui.dataMsg = { kind: "bad", text: "このアプリの書き出しデータではないようです。" };
-      renderImport(); return;
+      renderStats(); return;
     }
     try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* 続行 */ }
     state = load();
@@ -1183,7 +1160,7 @@
       chip.textContent = d ? "今日 ○" + (d.correct || 0) + " ×" + (d.wrong || 0) : "今日 まだ0問";
     }
 
-    ["practice", "stats", "sets", "import"].forEach(function (name) {
+    ["practice", "stats", "sets"].forEach(function (name) {
       var v = document.getElementById("v-" + name);
       if (v) v.hidden = name !== ui.tab;
     });
@@ -1194,8 +1171,7 @@
 
     if (ui.tab === "practice") renderPractice();
     else if (ui.tab === "stats") renderStats();
-    else if (ui.tab === "sets") renderSets();
-    else renderImport();
+    else renderSets();
   }
 
   function onClick(e) {
@@ -1269,8 +1245,6 @@
       return;
     }
 
-    if (act === "do-import") { doImport(); return; }
-    if (act === "copy-schema") { copyText(SCHEMA, "形式をコピーしました"); return; }
     if (act === "copy-data") {
       var ta = document.getElementById("dataText");
       copyText(ta ? ta.value : "", "学習データをコピーしました");
