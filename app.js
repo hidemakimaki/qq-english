@@ -416,6 +416,15 @@
     return p;
   }
 
+  /* 次の周に入る。クリア判定だけ戻し、正誤の回数（重点復習や記録の元データ）は残す */
+  function startNewLap(setId) {
+    var p = prog(setId);
+    ["basic", "similar"].forEach(function (step) {
+      Object.keys(p[step]).forEach(function (qid) { p[step][qid].cleared = false; });
+    });
+    p.lapCounted = false;
+  }
+
   function qstat(setId, step, qid) {
     var bucket = prog(setId)[step];
     var st = bucket[qid];
@@ -688,7 +697,9 @@
     var total = stepTotal(session.setId, session.step);
 
     if (session.done) {
-      var done = clearedCount(session.setId, session.step);
+      var done = session.snapDone != null
+        ? session.snapDone
+        : clearedCount(session.setId, session.step);
       var perfect = done === total;
       /* 全問を一度も間違えずに通した（部分的なやり直しは含めない） */
       var noMiss = perfect && session.wrong === 0 && session.queue.length === total;
@@ -713,6 +724,9 @@
         '<button class="btn primary big" data-act="start" data-mode="remain">未正解の ' + remainQ.length + ' 問をもう一度</button>';
       } else if (session.step === "basic") {
         html += '<button class="btn primary big" data-act="start" data-mode="remain" data-step="similar">STEP 2 の類似問題へ</button>';
+      } else if (session.lapAchieved) {
+        html += '<button class="btn primary big" data-act="start" data-mode="all" data-step="basic">' +
+          (session.lapAchieved + 1) + '周目をはじめる（STEP 1 から）</button>';
       } else {
         html += '<button class="btn primary big" data-act="start" data-mode="all">もう一度 10 問まわす</button>';
       }
@@ -813,8 +827,10 @@
         isStepCleared(session.setId, "basic") &&
         isStepCleared(session.setId, "similar")) {
       pg.laps++;
-      pg.lapCounted = true;
       session.lapAchieved = pg.laps;
+      /* 結果画面はこの時点のスコアを表示し、進捗は次の周のために戻しておく */
+      session.snapDone = clearedCount(session.setId, session.step);
+      startNewLap(session.setId);
     }
 
     session.idx++;
@@ -1051,8 +1067,7 @@
         lapStars(prog(s.id).laps) +
         '<div class="row">' +
           (cur ? "" : '<button class="btn-sm" data-act="use-set" data-id="' + esc(s.id) + '">このセットで練習</button>') +
-          '<button class="btn-sm" data-act="reset-set" data-id="' + esc(s.id) + '">' +
-            (bt && bc === bt && stt && sc === stt ? "もう1周する" : "進捗をリセット") + "</button>" +
+          '<button class="btn-sm" data-act="reset-set" data-id="' + esc(s.id) + '">進捗をリセット</button>' +
           (confirming
             ? '<button class="btn-sm danger" data-act="del-set" data-id="' + esc(s.id) + '">本当に削除</button>' +
               '<button class="btn-sm" data-act="cancel-confirm">やめる</button>'
@@ -1218,7 +1233,7 @@
       };
       save();
       render();
-      toast(keep.laps ? (keep.laps + 1) + "周目をはじめましょう" : "進捗をリセットしました");
+      toast("進捗をリセットしました");
       return;
     }
     if (act === "ask-del") { ui.confirm = "del:" + t.getAttribute("data-id"); render(); return; }
