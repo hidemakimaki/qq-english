@@ -311,7 +311,7 @@
   };
   var SEED_SETS = [SET_03, SET_04];
 
-  /* 正答数の帯ごとの応援スタンプ（10問なら 〜5問 / 6〜8問 / 9〜10問） */
+  /* 正答数の帯ごとの応援スタンプ（10問なら 〜5問 / 6〜9問 / 全問正解） */
   var CHEER_PACKS = {
     low: ["cheer/low-1.jpg", "cheer/low-2.jpg", "cheer/low-3.jpg", "cheer/low-4.jpg"],
     mid: ["cheer/mid-1.jpg", "cheer/mid-2.jpg", "cheer/mid-3.jpg"],
@@ -527,9 +527,9 @@
 
   function cheerBand(done, total) {
     if (!total) return "low";
-    if (done >= Math.ceil(total * 0.9)) return "high"; /* 10問なら9〜10問 */
-    if (done > Math.floor(total / 2)) return "mid";    /* 10問なら6〜8問 */
-    return "low";                                      /* 10問なら5問まで */
+    if (done >= total) return "high";               /* 全問正解のときだけ */
+    if (done > Math.floor(total / 2)) return "mid"; /* 10問なら6〜9問 */
+    return "low";                                   /* 10問なら5問まで */
   }
 
   function cheerStamp(band) {
