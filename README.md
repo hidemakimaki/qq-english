@@ -11,7 +11,7 @@ iPhone Safari 向けの瞬間英作文トレーニングアプリ。
 | `styles.css` | スタイル（ライト／ダーク両対応） |
 | `app.js` | アプリ本体。第3回・第4回の2セット（各 基本10問＋類似10問）を同梱 |
 | `sets.json` | 収録セットの正本。`app.js` の該当部分はここから生成する |
-| `cheer/` | 応援スタンプ。正答数の帯ごと（low 4枚 / mid 3枚 / high 3枚） |
+| `cheer/` | 応援スタンプ。帯ごと（low 4枚 / mid 3枚 / high 3枚 / perfect 4枚） |
 | `manifest.json` / `sw.js` / `icon-*.png` / `apple-touch-icon.png` | PWA・オフライン用（`icon.svg` は旧アイコン・未使用） |
 
 ## 使い方
@@ -58,6 +58,7 @@ HTTPS で配信されるフォルダに丸ごと置き、`standalone.html` を S
 
 `cheer/` に帯ごとの画像を置き、`app.js` の `CHEER_PACKS` に列挙する。
 判定は10問中の正解数（`low` 〜5問 / `mid` 6〜9問 / `high` 全問正解）。
+10問を一度も間違えずに通したときだけ `perfect`（いちばん大きく表示）。
 
 ## 公開
 

@@ -311,11 +311,14 @@
   };
   var SEED_SETS = [SET_03, SET_04];
 
-  /* 正答数の帯ごとの応援スタンプ（10問なら 〜5問 / 6〜9問 / 全問正解） */
+  /* 正答数の帯ごとの応援スタンプ（10問なら 〜5問 / 6〜9問 / 全問正解）。
+     perfect は10問を一度も間違えずに通したときだけ */
   var CHEER_PACKS = {
     low: ["cheer/low-1.jpg", "cheer/low-2.jpg", "cheer/low-3.jpg", "cheer/low-4.jpg"],
     mid: ["cheer/mid-1.jpg", "cheer/mid-2.jpg", "cheer/mid-3.jpg"],
-    high: ["cheer/high-1.jpg", "cheer/high-2.jpg", "cheer/high-3.jpg"]
+    high: ["cheer/high-1.jpg", "cheer/high-2.jpg", "cheer/high-3.jpg"],
+    perfect: ["cheer/perfect-1.jpg", "cheer/perfect-2.jpg",
+              "cheer/perfect-3.jpg", "cheer/perfect-4.jpg"]
   };
 
   var CHEERS = [
@@ -687,6 +690,8 @@
     if (session.done) {
       var done = clearedCount(session.setId, session.step);
       var perfect = done === total;
+      /* 全問を一度も間違えずに通した（部分的なやり直しは含めない） */
+      var noMiss = perfect && session.wrong === 0 && session.queue.length === total;
       var step2Locked = session.step === "basic" && !perfect;
       var html = '<div class="card stack" style="padding:20px">' +
         '<div class="result-head">' +
@@ -712,12 +717,14 @@
         html += '<button class="btn primary big" data-act="start" data-mode="all">もう一度 10 問まわす</button>';
       }
 
-      if (session.lapAchieved) {
-        html = html.replace('<div class="result-head">',
-          '<div class="lap-banner">★ ' + session.lapAchieved + '周目 達成</div><div class="result-head">');
+      var banners = (noMiss ? '<div class="lap-banner nomiss">ノーミス達成</div>' : "") +
+        (session.lapAchieved ? '<div class="lap-banner">★ ' + session.lapAchieved + '周目 達成</div>' : "");
+      if (banners) {
+        html = html.replace('<div class="result-head">', banners + '<div class="result-head">');
       }
       html += '<button class="btn ghost" data-act="end">練習をおわる</button>' + "</div>";
-      if (!step2Locked && perfect) html += cheerBlock("よくやりました。この調子！", done, total);
+      if (noMiss) html += cheerBlock("10問ノーミス。文句なしです！", done, total, "perfect");
+      else if (!step2Locked && perfect) html += cheerBlock("よくやりました。この調子！", done, total);
       else html += cheerBlock("あと少し。間違えた文だけ、もう一周。", done, total);
       return html;
     }

@@ -606,6 +606,7 @@ h3 {
 
 .cheer-slot.stamp.mid { height: 124px; }
 .cheer-slot.stamp.high { height: 168px; }
+.cheer-slot.stamp.perfect { height: 200px; }
 
 .cheer-slot.stamp img {
   width: auto;
@@ -872,6 +873,8 @@ details.fold .fold-body { padding: 0 12px 12px; display: flex; flex-direction: c
 }
 
 .laps.empty { font-size: 11.5px; color: var(--ink-3); }
+
+.lap-banner.nomiss { background: var(--ok-soft); color: var(--ok); }
 
 .lap-banner {
   align-self: center;

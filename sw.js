@@ -1,5 +1,5 @@
 /* 瞬間英作文ドリル — オフライン用 service worker */
-var CACHE = "qq-shunkan-v9";
+var CACHE = "qq-shunkan-v10";
 var ASSETS = [
   "standalone.html",
   "styles.css",
@@ -17,7 +17,11 @@ var ASSETS = [
   "cheer/mid-3.jpg",
   "cheer/high-1.jpg",
   "cheer/high-2.jpg",
-  "cheer/high-3.jpg"
+  "cheer/high-3.jpg",
+  "cheer/perfect-1.jpg",
+  "cheer/perfect-2.jpg",
+  "cheer/perfect-3.jpg",
+  "cheer/perfect-4.jpg"
 ];
 
 self.addEventListener("install", function (e) {
