@@ -1,0 +1,304 @@
+{
+  "sets": [
+    {
+      "id": "qq-lesson-03",
+      "date": "2026-11-19",
+      "teacher": "未記入",
+      "title": "第3回 ふりかえり",
+      "basic": [
+        {
+          "id": "b1",
+          "ja": "もっと速く英語を話せるようになりたいです。",
+          "en": "I want to be able to speak English faster.",
+          "alt": ["I want to work on speaking more fluently."],
+          "note": "more fast は不可。fast は1音節なので比較級は faster。「〜できるようになりたい」は want to be able to 〜。"
+        },
+        {
+          "id": "b2",
+          "ja": "ingredients ってどういう意味ですか？",
+          "en": "What does \"ingredients\" mean?",
+          "alt": ["What's the meaning of \"ingredients\"?"],
+          "note": "分からない単語は黙らずこの一文で聞く。does のあとの動詞は原形 mean。"
+        },
+        {
+          "id": "b3",
+          "ja": "前向きな気持ちなら a few、がっかりしているなら few です。",
+          "en": "If I'm happy about it, I'd say \"a few.\" If I'm disappointed, I'd say \"few.\"",
+          "alt": [],
+          "note": "a few＝「少しある」で肯定的、few＝「ほとんどない」で否定的。両方 a few にしてしまわないよう注意。"
+        },
+        {
+          "id": "b4",
+          "ja": "それは本当に悲しいですね。",
+          "en": "That's really sad.",
+          "alt": ["I'm so sorry to hear that."],
+          "note": "accident は「事故」。出来事に同情するだけなら That's really sad. で足りる。"
+        },
+        {
+          "id": "b5",
+          "ja": "じゃがいもはひとつもありません。",
+          "en": "There aren't any potatoes.",
+          "alt": ["There are no potatoes."],
+          "note": "potatoes は複数なので there aren't。There isn't any potatoes は主語と動詞が合っていない。"
+        },
+        {
+          "id": "b6",
+          "ja": "（壁に）写真は何枚か飾ってありますか？",
+          "en": "Are there any pictures on the wall?",
+          "alt": ["Are there any pictures?"],
+          "note": "any のうしろの可算名詞は複数形 pictures。Are there any picture? は不可。"
+        },
+        {
+          "id": "b7",
+          "ja": "その部屋にカーペットは敷いてありますか？",
+          "en": "Is there a carpet in the room?",
+          "alt": ["Is there a rug in the room?"],
+          "note": "carpet は1枚と数えられるので a carpet。any carpet だと「カーペットという素材が少しでも」という響きになる。"
+        },
+        {
+          "id": "b8",
+          "ja": "エアコンはありますか？",
+          "en": "Is there an air conditioner?",
+          "alt": ["Is there air conditioning?"],
+          "note": "air は母音で始まるので a ではなく an。1台を指すので any ではなく an。"
+        },
+        {
+          "id": "b9",
+          "ja": "3人います。",
+          "en": "There are three people.",
+          "alt": ["There are three of us."],
+          "note": "person の複数は people。three persons は法律文書のような硬い言い方で、会話では使わない。"
+        },
+        {
+          "id": "b10",
+          "ja": "（お肉は）いいえ、ひとつもありません。",
+          "en": "No, there isn't any.",
+          "alt": ["No, there's none."],
+          "note": "Is there any meat? への即答。15秒考えこまずに返せるよう、形ごと覚える。"
+        }
+      ],
+      "similar": [
+        {
+          "id": "s1",
+          "ja": "もっと上手に発音できるようになりたいです。",
+          "en": "I want to be able to pronounce words better.",
+          "alt": ["I want to work on my pronunciation."],
+          "note": "基本1と同じ型。good／well の比較級は better。more good は不可。"
+        },
+        {
+          "id": "s2",
+          "ja": "この単語はどういう意味ですか？",
+          "en": "What does this word mean?",
+          "alt": ["What's the meaning of this word?"],
+          "note": "基本2と同じ型。主語が this word でも does のあとは原形 mean。"
+        },
+        {
+          "id": "s3",
+          "ja": "時間が少しだけあります。",
+          "en": "I have a little time.",
+          "alt": ["I have a bit of time."],
+          "note": "基本3の不可算版。可算は a few / few、不可算は a little / little。little だけなら「ほとんどない」。"
+        },
+        {
+          "id": "s4",
+          "ja": "それは本当によかったですね。",
+          "en": "That's really great.",
+          "alt": ["I'm so glad to hear that."],
+          "note": "基本4と同じ That's really 〜. の型。感情は形容詞1語で足りる。"
+        },
+        {
+          "id": "s5",
+          "ja": "牛乳がまったくありません。",
+          "en": "There isn't any milk.",
+          "alt": ["There's no milk."],
+          "note": "基本5の逆パターン。milk は不可算なので there isn't。可算の複数なら aren't。"
+        },
+        {
+          "id": "s6",
+          "ja": "何か質問はありますか？",
+          "en": "Are there any questions?",
+          "alt": ["Do you have any questions?"],
+          "note": "基本6と同じ。any のあとは複数形 questions。"
+        },
+        {
+          "id": "s7",
+          "ja": "その部屋にテレビはありますか？",
+          "en": "Is there a TV in the room?",
+          "alt": ["Does the room have a TV?"],
+          "note": "基本7と同じ。1台なら a TV。"
+        },
+        {
+          "id": "s8",
+          "ja": "傘はありますか？",
+          "en": "Is there an umbrella?",
+          "alt": ["Do you have an umbrella?"],
+          "note": "基本8と同じ。umbrella も母音で始まるので an。"
+        },
+        {
+          "id": "s9",
+          "ja": "子どもが2人います。",
+          "en": "There are two children.",
+          "alt": ["There are two kids."],
+          "note": "基本9と同じ不規則な複数形。child → children。childs は不可。"
+        },
+        {
+          "id": "s10",
+          "ja": "はい、少しあります。",
+          "en": "Yes, there are some.",
+          "alt": ["Yes, there's some."],
+          "note": "基本10の肯定版。可算の複数なら there are some、不可算なら there is some。"
+        }
+      ]
+    },
+    {
+      "id": "qq-lesson-04",
+      "date": "2026-11-20",
+      "teacher": "未記入",
+      "title": "第4回 ふりかえり",
+      "basic": [
+        {
+          "id": "b1",
+          "ja": "悪くないけど少し疲れています。今日は仕事で忙しくて。",
+          "en": "Not bad, but I'm a little tired. I've been busy with work today.",
+          "alt": ["Not bad, but I'm a bit tired — work has been keeping me busy."],
+          "note": "I tired ではなく I'm tired。work は不可算なので a work と言わない。「ずっと忙しかった」は I've been busy with work。"
+        },
+        {
+          "id": "b2",
+          "ja": "もう「book」と言ったので、繰り返さずに「mine」と言えるんですね？",
+          "en": "So if I've already said \"book,\" I can say \"mine\" instead of repeating it?",
+          "alt": ["So instead of saying \"book\" again, I can just say \"mine\"?"],
+          "note": "所有代名詞は同じ名詞の繰り返しを避けるために使う。理解を確認するときは So 〜? と聞き返す。"
+        },
+        {
+          "id": "b3",
+          "ja": "少し混乱しています。なぜ「my family's house」が「ours」と同じなのですか？",
+          "en": "I'm a little confused. Why is \"my family's house\" the same as \"ours\"?",
+          "alt": [],
+          "note": "混乱しているのは自分なので I'm confused。confusing は「（相手を）混乱させる」という意味になる。"
+        },
+        {
+          "id": "b4",
+          "ja": "難しかったです。boots が複数だと忘れていました。",
+          "en": "That was difficult. I forgot that \"boots\" is plural, so I should say \"they are.\"",
+          "alt": ["That was hard. I forgot \"boots\" is plural."],
+          "note": "終わったことなので That was difficult.。It is difficult. だと「今も難しい」という意味になる。"
+        },
+        {
+          "id": "b5",
+          "ja": "ウェイターは本当に「This table will be yours」と言うのですか？",
+          "en": "Do waiters really say \"This table will be yours\"?",
+          "alt": ["Is that something waiters actually say?"],
+          "note": "職業一般の話は複数形の主語＋do。Does waiter 〜? とはしない。"
+        },
+        {
+          "id": "b6",
+          "ja": "「James's」は言いにくいです。",
+          "en": "\"James's\" sounds strange to me.",
+          "alt": ["\"James's\" is hard for me to say."],
+          "note": "It is strange, James では「ジェームズ、それは変だね」と呼びかけになる。引用した語を主語にして sounds 〜 to me。"
+        },
+        {
+          "id": "b7",
+          "ja": "先生の説明はとても分かりやすいです。",
+          "en": "You explain things really well.",
+          "alt": ["You're a great teacher.", "Your explanations are really clear."],
+          "note": "You teach me very good. は不可。動詞 explain / teach を修飾するのは副詞 well。"
+        },
+        {
+          "id": "b8",
+          "ja": "plural ってどういう意味ですか？",
+          "en": "What does plural mean?",
+          "alt": ["What's the meaning of plural?", "Could you explain what plural means?"],
+          "note": "does のある疑問文では動詞は原形 mean。What does plural means? は不可。関係節の中（what plural means）では means になる。"
+        },
+        {
+          "id": "b9",
+          "ja": "これはあなたのヘッドホンですか？",
+          "en": "Are these your headphones?",
+          "alt": [],
+          "note": "headphones は左右で1組＝複数。Is this your headphone? は不可。"
+        },
+        {
+          "id": "b10",
+          "ja": "それはベンのブーツですよ。",
+          "en": "They're Ben's boots.",
+          "alt": ["Those are Ben's boots."],
+          "note": "boots は2足で1組＝複数なので It's ではなく They're。shoes, socks, gloves も同じ。"
+        }
+      ],
+      "similar": [
+        {
+          "id": "s1",
+          "ja": "少し眠いです。今朝はずっと勉強で忙しくて。",
+          "en": "I'm a little sleepy. I've been busy studying this morning.",
+          "alt": ["I'm kind of sleepy — I've been studying all morning."],
+          "note": "基本1と同じ型。be 動詞＋形容詞、そして I've been busy ＋ -ing。"
+        },
+        {
+          "id": "s2",
+          "ja": "そのブーツは彼のものです。",
+          "en": "They're his.",
+          "alt": ["Those are his.", "They belong to him."],
+          "note": "They are he / him は不可。所有を表すのは所有代名詞 his。"
+        },
+        {
+          "id": "s3",
+          "ja": "少し混乱しています。なぜ「his」ではなく「hers」なのですか？",
+          "en": "I'm a little confused. Why is it \"hers\" and not \"his\"?",
+          "alt": [],
+          "note": "基本3と同じ型。Why is it A and not B? の形で聞き返せる。"
+        },
+        {
+          "id": "s4",
+          "ja": "難しかったです。glasses が複数だと忘れていました。",
+          "en": "That was difficult. I forgot that \"glasses\" is plural.",
+          "alt": [],
+          "note": "基本4と同じ。glasses, scissors, pants はいつも複数扱い。"
+        },
+        {
+          "id": "s5",
+          "ja": "先生は本当にそう言うのですか？",
+          "en": "Do teachers really say that?",
+          "alt": ["Is that something teachers actually say?"],
+          "note": "基本5と同じ。一般的な話は複数形の主語＋do。"
+        },
+        {
+          "id": "s6",
+          "ja": "「clothes」は私には言いにくいです。",
+          "en": "\"Clothes\" is hard for me to say.",
+          "alt": ["\"Clothes\" sounds difficult to me."],
+          "note": "基本6と同じ型。発音は「クロウズ」に近く th はほぼ消える。cross と聞き分けられるよう注意。"
+        },
+        {
+          "id": "s7",
+          "ja": "彼女は教えるのがとても上手です。",
+          "en": "She's really good at teaching.",
+          "alt": ["She's a really good teacher."],
+          "note": "基本7の別の型。be good at ＋動名詞。good を動詞に直接つけない。"
+        },
+        {
+          "id": "s8",
+          "ja": "この表現はどういう意味ですか？",
+          "en": "What does this expression mean?",
+          "alt": ["What's the meaning of this expression?"],
+          "note": "基本8と同じ。主語が this expression でも does のあとは原形 mean。"
+        },
+        {
+          "id": "s9",
+          "ja": "これはあなたのサングラスですか？",
+          "en": "Are these your sunglasses?",
+          "alt": [],
+          "note": "基本9と同じ。sunglasses も複数扱い。It's Mark's glasses ではなく They're Mark's sunglasses。"
+        },
+        {
+          "id": "s10",
+          "ja": "それはそのサッカー選手のボールです。",
+          "en": "It's the soccer player's ball.",
+          "alt": [],
+          "note": "特定の選手を指すので the が必要。It's soccer player's ball は冠詞抜け。ball は1個なので It's。"
+        }
+      ]
+    }
+  ]
+}

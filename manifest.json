@@ -1,0 +1,32 @@
+{
+  "name": "瞬間英作文ドリル",
+  "short_name": "瞬間英作文",
+  "description": "QQ English のレッスン記録から作る瞬間英作文トレーニング",
+  "lang": "ja",
+  "start_url": "standalone.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef1f6",
+  "theme_color": "#5b3fd1",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
