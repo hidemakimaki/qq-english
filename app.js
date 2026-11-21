@@ -532,16 +532,18 @@
     return "low";                                      /* 10問なら5問まで */
   }
 
-  function cheerStamp(done, total) {
-    var pack = CHEER_PACKS[cheerBand(done, total)] || [];
+  function cheerStamp(band) {
+    var pack = CHEER_PACKS[band] || [];
     if (!pack.length) return null;
     return pack[Math.floor(Math.random() * pack.length)];
   }
 
-  function cheerBlock(msg, done, total) {
+  /* forceBand を渡すと正解数にかかわらずその帯のスタンプを出す
+     （練習前の画面は常に low。大きいご褒美は結果画面のためにとっておく） */
+  function cheerBlock(msg, done, total, forceBand) {
     var hasRate = typeof done === "number" && typeof total === "number";
-    var band = hasRate ? cheerBand(done, total) : null;
-    var stamp = hasRate ? cheerStamp(done, total) : null;
+    var band = hasRate ? (forceBand || cheerBand(done, total)) : null;
+    var stamp = band ? cheerStamp(band) : null;
     var img = state.cheerImage;
     var src = stamp || img;
     return '<div class="cheer">' +
@@ -603,7 +605,7 @@
         "</div>";
     }
 
-    html += cheerBlock(CHEERS[Math.floor(Math.random() * CHEERS.length)], done, total);
+    html += cheerBlock(CHEERS[Math.floor(Math.random() * CHEERS.length)], done, total, "low");
 
     var focus = focusItems(set.id);
     if (focus.length) {
