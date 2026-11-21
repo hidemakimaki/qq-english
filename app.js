@@ -365,7 +365,6 @@
       daily: {},
       lastStudied: null,
       cheerImage: null,
-      settings: { autoSpeak: true },
       currentSetId: SEED_SETS[SEED_SETS.length - 1].id
     };
   }
@@ -383,9 +382,6 @@
     if (data.daily && typeof data.daily === "object") s.daily = data.daily;
     s.lastStudied = data.lastStudied || null;
     s.cheerImage = data.cheerImage || null;
-    if (data.settings && typeof data.settings === "object") {
-      s.settings.autoSpeak = data.settings.autoSpeak !== false;
-    }
     s.currentSetId = data.currentSetId || s.sets[0].id;
     if (!getSet(s.currentSetId, s)) s.currentSetId = s.sets[0].id;
     return s;
@@ -440,42 +436,6 @@
   function isStepCleared(setId, step) {
     var total = stepTotal(setId, step);
     return total > 0 && clearedCount(setId, step) === total;
-  }
-
-  /* ============================================================
-     読み上げ
-     ============================================================ */
-
-  var voice = null;
-
-  function pickVoice() {
-    try {
-      var vs = window.speechSynthesis.getVoices() || [];
-      var pref = null, anyEn = null;
-      for (var i = 0; i < vs.length; i++) {
-        var v = vs[i];
-        if (!/^en/i.test(v.lang)) continue;
-        if (!anyEn) anyEn = v;
-        if (/en[-_]US/i.test(v.lang) && /samantha|google us|ava|allison/i.test(v.name)) { pref = v; break; }
-        if (/en[-_]US/i.test(v.lang) && !pref) pref = v;
-      }
-      voice = pref || anyEn || null;
-    } catch (e) { voice = null; }
-  }
-
-  function speak(text) {
-    if (!("speechSynthesis" in window) || !text) {
-      toast("この端末では読み上げが使えません。");
-      return;
-    }
-    try {
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(String(text));
-      u.lang = (voice && voice.lang) || "en-US";
-      if (voice) u.voice = voice;
-      u.rate = 0.95;
-      window.speechSynthesis.speak(u);
-    } catch (e) { /* 無視 */ }
   }
 
   /* ============================================================
@@ -677,10 +637,12 @@
       pool = all.filter(function (q) { return !qstat(set.id, step, q.id).cleared; });
       if (!pool.length) pool = all;
     }
-    /* 何度も間違えた問題を先に */
-    pool = pool.slice().sort(function (a, b) {
-      return qstat(set.id, step, b.id).wrong - qstat(set.id, step, a.id).wrong;
-    });
+    /* ランダムに並べ替える（Fisher-Yates） */
+    pool = pool.slice();
+    for (var i = pool.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+    }
 
     session = {
       setId: set.id,
@@ -771,8 +733,7 @@
         (st.wrong >= FOCUS_THRESHOLD ? '<div class="hint-chips"><span class="hint">重点復習 ×' + st.wrong + "</span></div>" : "") +
         '<p class="ja-q">' + esc(q.ja) + "</p>" +
         '<div class="ans"' + (session.revealed ? "" : " hidden") + ">" +
-          '<div class="en-row"><p class="en">' + esc(q.en) + "</p>" +
-          '<button class="speak" data-act="speak" data-text="' + esc(q.en) + '" aria-label="英文を読み上げる">🔊</button></div>' +
+          '<p class="en">' + esc(q.en) + "</p>" +
           ((q.alt && q.alt.length) ? '<ul class="alts">' + q.alt.map(function (a) {
             return "<li>" + esc(a) + "</li>";
           }).join("") + "</ul>" : "") +
@@ -804,10 +765,6 @@
     if (!session) return;
     session.revealed = true;
     render();
-    if (state.settings.autoSpeak) {
-      var q = sessionQuestion();
-      if (q) speak(q.en);
-    }
   }
 
   function grade(ok) {
@@ -1021,8 +978,6 @@
       "</div>";
 
     html += '<div class="card stack">' +
-      '<label class="switch"><input type="checkbox" id="autoSpeak"' +
-        (state.settings.autoSpeak ? " checked" : "") + ">正解を表示したら自動で読み上げる</label>" +
       '<details class="fold"><summary>学習データの書き出し・読み込み</summary><div class="fold-body">' +
         '<p class="lede" style="margin:0">機種変更やバックアップ用。下の JSON をコピーして保管し、' +
         '新しい端末で貼り付けて「復元する」を押します。</p>' +
@@ -1034,12 +989,6 @@
     '</div>';
 
     el.innerHTML = html;
-    var cb = document.getElementById("autoSpeak");
-    if (cb) cb.addEventListener("change", function () {
-      state.settings.autoSpeak = cb.checked;
-      save();
-      toast(cb.checked ? "自動読み上げをオンにしました" : "自動読み上げをオフにしました");
-    });
   }
 
   function renderSets() {
@@ -1210,7 +1159,6 @@
     }
     if (act === "reveal") { reveal(); return; }
     if (act === "grade") { grade(t.getAttribute("data-v") === "1"); return; }
-    if (act === "speak") { speak(t.getAttribute("data-text")); return; }
     if (act === "end") { session = null; render(); return; }
 
     if (act === "use-set") {
@@ -1281,11 +1229,6 @@
       handleCheerFile(cf.files && cf.files[0]);
       cf.value = "";
     });
-
-    if ("speechSynthesis" in window) {
-      pickVoice();
-      window.speechSynthesis.onvoiceschanged = pickVoice;
-    }
 
     render();
   }

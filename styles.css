@@ -465,8 +465,6 @@ h3 {
 
 .ans { display: flex; flex-direction: column; gap: 12px; border-top: 1px dashed var(--border-strong); padding-top: 14px; }
 
-.en-row { display: flex; align-items: flex-start; gap: 10px; }
-
 .en {
   flex: 1;
   margin: 0;
@@ -477,21 +475,6 @@ h3 {
   letter-spacing: -.01em;
   color: var(--accent-ink);
 }
-
-.speak {
-  flex: none;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 1px solid var(--border-strong);
-  background: var(--surface-2);
-  color: var(--ink);
-  font-size: 19px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.speak:active { background: var(--accent-soft); }
 
 .alts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 5px; }
 
@@ -915,9 +898,6 @@ pre.schema {
 
 .msg.good { background: var(--ok-soft); color: var(--ok); }
 .msg.bad { background: var(--no-soft); color: var(--no); }
-
-.switch { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--ink-2); }
-.switch input { width: 20px; height: 20px; accent-color: var(--accent); }
 
 /* ---------- tab bar ---------- */
 
