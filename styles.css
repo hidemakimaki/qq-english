@@ -594,6 +594,7 @@ h3 {
 .cheer-slot.stamp {
   width: auto;
   height: 92px;
+  min-width: 72px; /* 画像の読み込み前に枠がつぶれないように */
   max-width: 60%;
   padding: 0;
   background: #ffffff;
