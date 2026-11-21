@@ -408,6 +408,8 @@
     if (!p) { p = state.progress[setId] = { basic: {}, similar: {}, lastStudied: null }; }
     if (!p.basic) p.basic = {};
     if (!p.similar) p.similar = {};
+    if (typeof p.laps !== "number") p.laps = 0;        /* 基本・類似とも全問クリアした回数 */
+    if (typeof p.lapCounted !== "boolean") p.lapCounted = false;
     return p;
   }
 
@@ -710,6 +712,10 @@
         html += '<button class="btn primary big" data-act="start" data-mode="all">もう一度 10 問まわす</button>';
       }
 
+      if (session.lapAchieved) {
+        html = html.replace('<div class="result-head">',
+          '<div class="lap-banner">★ ' + session.lapAchieved + '周目 達成</div><div class="result-head">');
+      }
       html += '<button class="btn ghost" data-act="end">練習をおわる</button>' + "</div>";
       if (!step2Locked && perfect) html += cheerBlock("よくやりました。この調子！", done, total);
       else html += cheerBlock("あと少し。間違えた文だけ、もう一周。", done, total);
@@ -791,7 +797,18 @@
       session.missed.push(q.id);
     }
     state.lastStudied = t;
-    prog(session.setId).lastStudied = t;
+    var pg = prog(session.setId);
+    pg.lastStudied = t;
+
+    /* 基本・類似の両方が全問クリアになった瞬間に1周ぶん数える。
+       次の周は「進捗をリセット」してから始める */
+    if (!pg.lapCounted &&
+        isStepCleared(session.setId, "basic") &&
+        isStepCleared(session.setId, "similar")) {
+      pg.laps++;
+      pg.lapCounted = true;
+      session.lapAchieved = pg.laps;
+    }
 
     session.idx++;
     session.revealed = false;
@@ -994,6 +1011,16 @@
     el.innerHTML = html;
   }
 
+  function lapStars(n) {
+    if (!n) {
+      return '<p class="laps empty">基本と類似を両方 10/10 にすると★がつきます。</p>';
+    }
+    var stars = "";
+    for (var i = 0; i < Math.min(n, 10); i++) stars += "★";
+    return '<p class="laps"><span class="stars">' + stars + '</span>' +
+      '<span class="laps-n">' + n + '周</span></p>';
+  }
+
   function renderSets() {
     var el = document.getElementById("v-sets");
     var sets = state.sets.slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
@@ -1014,9 +1041,11 @@
           '<span class="pill' + (bt && bc === bt ? " done" : "") + '">基本 ' + bc + "/" + bt + "</span>" +
           '<span class="pill' + (stt && sc === stt ? " done" : "") + '">類似 ' + sc + "/" + stt + "</span>" +
         "</div>" +
+        lapStars(prog(s.id).laps) +
         '<div class="row">' +
           (cur ? "" : '<button class="btn-sm" data-act="use-set" data-id="' + esc(s.id) + '">このセットで練習</button>') +
-          '<button class="btn-sm" data-act="reset-set" data-id="' + esc(s.id) + '">進捗をリセット</button>' +
+          '<button class="btn-sm" data-act="reset-set" data-id="' + esc(s.id) + '">' +
+            (bt && bc === bt && stt && sc === stt ? "もう1周する" : "進捗をリセット") + "</button>" +
           (confirming
             ? '<button class="btn-sm danger" data-act="del-set" data-id="' + esc(s.id) + '">本当に削除</button>' +
               '<button class="btn-sm" data-act="cancel-confirm">やめる</button>'
@@ -1175,10 +1204,14 @@
     }
     if (act === "reset-set") {
       var id = t.getAttribute("data-id");
-      state.progress[id] = { basic: {}, similar: {}, lastStudied: null };
+      var keep = prog(id);
+      state.progress[id] = {
+        basic: {}, similar: {}, lastStudied: keep.lastStudied,
+        laps: keep.laps, lapCounted: false
+      };
       save();
       render();
-      toast("進捗をリセットしました");
+      toast(keep.laps ? (keep.laps + 1) + "周目をはじめましょう" : "進捗をリセットしました");
       return;
     }
     if (act === "ask-del") { ui.confirm = "del:" + t.getAttribute("data-id"); render(); return; }
