@@ -589,17 +589,32 @@ h3 {
 .cheer-slot.has { border-style: solid; border-color: var(--border); }
 .cheer-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+/* ご褒美スタンプ。正解数が多い帯ほど大きく見せる。
+   high の画像は縦長なので、高さを基準にして幅は画像の比率にまかせる */
 .cheer-slot.stamp {
-  width: 92px;
+  width: auto;
   height: 92px;
+  max-width: 60%;
   padding: 0;
   background: #ffffff;
   border-style: solid;
   border-color: var(--border);
   cursor: default;
+  transition: height .25s ease;
 }
 
-.cheer-slot.stamp img { object-fit: contain; }
+.cheer-slot.stamp.mid { height: 124px; }
+.cheer-slot.stamp.high { height: 168px; }
+
+.cheer-slot.stamp img {
+  width: auto;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cheer-slot.stamp { transition: none; }
+}
 
 .cheer-text { flex: 1; min-width: 0; }
 .cheer-text p { margin: 0; font-size: 14.5px; font-weight: 500; }

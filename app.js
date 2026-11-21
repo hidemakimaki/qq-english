@@ -539,12 +539,13 @@
   }
 
   function cheerBlock(msg, done, total) {
-    var stamp = (typeof done === "number" && typeof total === "number")
-      ? cheerStamp(done, total) : null;
+    var hasRate = typeof done === "number" && typeof total === "number";
+    var band = hasRate ? cheerBand(done, total) : null;
+    var stamp = hasRate ? cheerStamp(done, total) : null;
     var img = state.cheerImage;
     var src = stamp || img;
     return '<div class="cheer">' +
-      '<div class="cheer-slot' + (src ? " has" : "") + (stamp ? " stamp" : "") + '"' +
+      '<div class="cheer-slot' + (src ? " has" : "") + (stamp ? " stamp " + band : "") + '"' +
         (stamp ? "" : ' data-act="pick-cheer" role="button" tabindex="0"') + '>' +
         (src ? '<img src="' + esc(src) + '" alt="応援スタンプ">' : "画像を<br>追加") +
       '</div>' +
