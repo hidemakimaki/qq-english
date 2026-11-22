@@ -1,5 +1,5 @@
 /* 瞬間英作文ドリル — オフライン用 service worker */
-var CACHE = "qq-shunkan-v11";
+var CACHE = "qq-shunkan-v12";
 var ASSETS = [
   "standalone.html",
   "styles.css",

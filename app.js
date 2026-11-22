@@ -9,7 +9,7 @@
      収録セット（レッスンのふりかえりから作成 / 正本は sets.json）
      ============================================================ */
 
-  var SET_03 = {
+  var SET_LESSON_03 = {
     id: "qq-lesson-03",
     date: "2026-11-19",
     teacher: "未記入",
@@ -159,7 +159,7 @@
       }
     ]
   };
-  var SET_04 = {
+  var SET_LESSON_04 = {
     id: "qq-lesson-04",
     date: "2026-11-20",
     teacher: "未記入",
@@ -309,7 +309,86 @@
       }
     ]
   };
-  var SEED_SETS = [SET_03, SET_04];
+  var SET_TOKKUN_01 = {
+    id: "qq-tokkun-01",
+    date: "2026-11-22",
+    teacher: "未記入",
+    title: "#1 特訓",
+    basic: [
+      {
+        id: "b1",
+        ja: "なぜ私の答えはあなたの答えと同じなの？",
+        en: "Why is my answer the same as yours?",
+        alt: [],
+        note: "the same as のあとは所有代名詞 yours（= your answer）。your だけでは文を終われない。"
+      },
+      {
+        id: "b2",
+        ja: "なぜ彼女ではなく彼なの？",
+        en: "Why is it him and not her?",
+        alt: [],
+        note: "Why is it 〜? の形。be 動詞のあとでも、この言い方では目的格 him / her を使う。"
+      },
+      {
+        id: "b3",
+        ja: "なぜこの単語はあの単語と同じなの？",
+        en: "Why is this word the same as that word?",
+        alt: [],
+        note: "比べる相手が名詞のときは the same as ＋名詞。as のあとに like は付けない。"
+      },
+      {
+        id: "b4",
+        ja: "なぜ月曜日ではなく火曜日なの？",
+        en: "Why is it Tuesday and not Monday?",
+        alt: [],
+        note: "曜日は大文字で始める。and not 〜 で「〜ではなく」を後ろに足す。"
+      },
+      {
+        id: "b5",
+        ja: "なぜ私の考えは彼女の考えと同じなの？",
+        en: "Why is my idea the same as hers?",
+        alt: [],
+        note: "hers = her idea。her idea と繰り返さず1語で済ませる。"
+      },
+      {
+        id: "b6",
+        ja: "なぜ赤ではなく青なの？",
+        en: "Why is it blue and not red?",
+        alt: [],
+        note: "色は数えないので a は付けない。it は話題になっているものを指す。"
+      },
+      {
+        id: "b7",
+        ja: "なぜこの質問は前の質問と同じなの？",
+        en: "Why is this question the same as the previous one?",
+        alt: [],
+        note: "one は question の代わり。the previous question と繰り返さなくてよい。"
+      },
+      {
+        id: "b8",
+        ja: "なぜ彼のものではなく彼女のものなの？",
+        en: "Why is it hers and not his?",
+        alt: [],
+        note: "所有代名詞どうしの対比。her ではなく hers、he ではなく his。"
+      },
+      {
+        id: "b9",
+        ja: "なぜこの問題は昨日の問題と同じなの？",
+        en: "Why is this problem the same as yesterday's?",
+        alt: [],
+        note: "yesterday's = yesterday's problem。's のあとの名詞は省ける。"
+      },
+      {
+        id: "b10",
+        ja: "なぜ英語ではなく日本語なの？",
+        en: "Why is it Japanese and not English?",
+        alt: [],
+        note: "言語名は大文字で始める。a Japanese とはしない。"
+      }
+    ],
+    similar: []
+  };
+  var SEED_SETS = [SET_LESSON_03, SET_LESSON_04, SET_TOKKUN_01];
 
   /* 正答数の帯ごとの応援スタンプ（10問なら 〜5問 / 6〜9問 / 全問正解）。
      perfect は10問を一度も間違えずに通したときだけ */
@@ -381,6 +460,10 @@
     if (!data || typeof data !== "object") return defaultState();
     var s = defaultState();
     if (Array.isArray(data.sets) && data.sets.length) s.sets = data.sets;
+    /* コード側で増えたセットは、保存済みのデータにも自動で足す */
+    SEED_SETS.forEach(function (seed) {
+      if (!getSet(seed.id, s)) s.sets.push(seed);
+    });
     if (data.progress && typeof data.progress === "object") s.progress = data.progress;
     if (data.daily && typeof data.daily === "object") s.daily = data.daily;
     s.lastStudied = data.lastStudied || null;
@@ -445,6 +528,19 @@
   function stepTotal(setId, step) {
     var set = getSet(setId);
     return set && Array.isArray(set[step]) ? set[step].length : 0;
+  }
+
+  function hasStep(setId, step) { return stepTotal(setId, step) > 0; }
+
+  /* 問題のある STEP がすべて埋まったか（類似のないセットは基本だけで判定） */
+  function isSetCleared(setId) {
+    var any = false;
+    var all = ["basic", "similar"].every(function (step) {
+      if (!hasStep(setId, step)) return true;
+      any = true;
+      return isStepCleared(setId, step);
+    });
+    return any && all;
   }
 
   function isStepCleared(setId, step) {
@@ -584,7 +680,11 @@
 
     if (session) { el.innerHTML = renderSession(); afterSessionRender(); return; }
 
-    var html = '<div class="steps">' + stepChip("basic", "STEP 1") + stepChip("similar", "STEP 2") + "</div>";
+    var twoSteps = hasStep(set.id, "similar");
+    if (!twoSteps) ui.step = "basic";
+    var html = twoSteps
+      ? '<div class="steps">' + stepChip("basic", "STEP 1") + stepChip("similar", "STEP 2") + "</div>"
+      : '<div class="steps one">' + stepChip("basic", "特訓") + "</div>";
 
     var step = ui.step;
     var locked = step === "similar" && !isStepCleared(set.id, "basic");
@@ -709,7 +809,8 @@
           '<h3>' + (session.step === "basic" ? "STEP 1 基本文" : "STEP 2 類似問題") + '</h3>' +
           '<div class="result-score"><b>' + done + '</b><span>/ ' + total + '</span></div>' +
           '<span class="badge ' + (perfect ? "ok" : "mid") + '">' +
-            (perfect ? (session.step === "basic" ? "10/10 達成 — STEP 2 解放！" : "10/10 達成 — セット完走！")
+            (perfect ? (session.step === "basic" && hasStep(session.setId, "similar")
+                          ? "10/10 達成 — STEP 2 解放！" : "10/10 達成 — セット完走！")
                      : "クリア済み " + done + " 問 / 今回 ○" + session.correct + " ×" + session.wrong) +
           "</span>" +
         "</div>";
@@ -722,7 +823,7 @@
           return "<li><span class=\"mj\">" + esc(q.ja) + '</span><span class="me">' + esc(q.en) + "</span></li>";
         }).join("") + "</ul>" +
         '<button class="btn primary big" data-act="start" data-mode="remain">未正解の ' + remainQ.length + ' 問をもう一度</button>';
-      } else if (session.step === "basic") {
+      } else if (session.step === "basic" && hasStep(session.setId, "similar")) {
         html += '<button class="btn primary big" data-act="start" data-mode="remain" data-step="similar">STEP 2 の類似問題へ</button>';
       } else if (session.lapAchieved) {
         html += '<button class="btn primary big" data-act="start" data-mode="all" data-step="basic">' +
@@ -823,9 +924,7 @@
 
     /* 基本・類似の両方が全問クリアになった瞬間に1周ぶん数える。
        次の周は「進捗をリセット」してから始める */
-    if (!pg.lapCounted &&
-        isStepCleared(session.setId, "basic") &&
-        isStepCleared(session.setId, "similar")) {
+    if (!pg.lapCounted && isSetCleared(session.setId)) {
       pg.laps++;
       session.lapAchieved = pg.laps;
       /* 結果画面はこの時点のスコアを表示し、進捗は次の周のために戻しておく */
@@ -942,7 +1041,8 @@
           '<span class="t">' + esc(s.title || "レッスンセット") + '</span></div>' +
         '<div class="pr-steps">' +
           stepMeter("基本", clearedCount(s.id, "basic"), stepTotal(s.id, "basic")) +
-          stepMeter("類似", clearedCount(s.id, "similar"), stepTotal(s.id, "similar")) +
+          (hasStep(s.id, "similar")
+            ? stepMeter("類似", clearedCount(s.id, "similar"), stepTotal(s.id, "similar")) : "") +
         '</div>' +
         (last
           ? '<div class="pr-trend">' + sparkline(hist.map(function (x) { return x.rate; })) +
@@ -1036,7 +1136,7 @@
 
   function lapStars(n) {
     if (!n) {
-      return '<p class="laps empty">基本と類似を両方 10/10 にすると★がつきます。</p>';
+      return '<p class="laps empty">全問クリアすると★がつきます。</p>';
     }
     var stars = "";
     for (var i = 0; i < Math.min(n, 10); i++) stars += "★";
@@ -1062,7 +1162,7 @@
         '<div class="set-meta">講師: ' + esc(s.teacher || "未記入") + "　/　ID: " + esc(s.id) + "</div>" +
         '<div class="pills">' +
           '<span class="pill' + (bt && bc === bt ? " done" : "") + '">基本 ' + bc + "/" + bt + "</span>" +
-          '<span class="pill' + (stt && sc === stt ? " done" : "") + '">類似 ' + sc + "/" + stt + "</span>" +
+          (stt ? '<span class="pill' + (sc === stt ? " done" : "") + '">類似 ' + sc + "/" + stt + "</span>" : "") +
         "</div>" +
         lapStars(prog(s.id).laps) +
         '<div class="row">' +

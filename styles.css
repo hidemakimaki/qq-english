@@ -219,6 +219,8 @@ h3 {
 
 .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+.steps.one { grid-template-columns: 1fr; }
+
 .step-chip {
   position: relative;
   display: flex;
