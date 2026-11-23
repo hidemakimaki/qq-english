@@ -388,7 +388,86 @@
     ],
     similar: []
   };
-  var SEED_SETS = [SET_LESSON_03, SET_LESSON_04, SET_TOKKUN_01];
+  var SET_TOKKUN_02 = {
+    id: "qq-tokkun-02",
+    date: "2026-11-23",
+    teacher: "未記入",
+    title: "#2 特訓（道案内）",
+    basic: [
+      {
+        id: "b1",
+        ja: "何かお困りですか？",
+        en: "Do you need any help?",
+        alt: ["Do you need some help?", "Is everything okay?"],
+        note: "声をかけるときの定番。May I help you? は店員の言い方なので、道では Do you need any help? が自然。"
+      },
+      {
+        id: "b2",
+        ja: "どこに行きたいですか？",
+        en: "Where are you trying to go?",
+        alt: ["Where are you headed?", "Where do you want to go?"],
+        note: "try to 〜 で「〜しようとしている」。Where do you want to go? より柔らかく聞こえる。"
+      },
+      {
+        id: "b3",
+        ja: "地図を見せてもらえますか？",
+        en: "Can you show me on the map?",
+        alt: ["Could you show me on the map?"],
+        note: "on the map で「地図の上で指して」。show me the map だと地図そのものを見せての意味になる。"
+      },
+      {
+        id: "b4",
+        ja: "ここから歩いて10分くらいです。",
+        en: "It's about a 10-minute walk from here.",
+        alt: ["It takes about 10 minutes on foot."],
+        note: "a 10-minute walk。ハイフンでつないで形容詞にするときは minutes と複数にしない。"
+      },
+      {
+        id: "b5",
+        ja: "この道をまっすぐ進んでください。",
+        en: "Go straight down this street.",
+        alt: ["Go straight along this street."],
+        note: "この down は「下る」ではなく「道沿いに」。along でも同じ意味になる。"
+      },
+      {
+        id: "b6",
+        ja: "次の角を右に曲がってください。",
+        en: "Turn right at the next corner.",
+        alt: ["Make a right at the next corner."],
+        note: "角は at the corner。on the corner とは言わない。turn right に to は不要。"
+      },
+      {
+        id: "b7",
+        ja: "駅の向かい側にあります。",
+        en: "It's across from the station.",
+        alt: ["It's opposite the station."],
+        note: "「向かい側」は across from。in front of は「正面」で道をはさまない。"
+      },
+      {
+        id: "b8",
+        ja: "ここからだと少し遠いですよ。",
+        en: "It's a little far from here.",
+        alt: ["It's a bit far from here."],
+        note: "far は肯定文では a little / quite などを添えると自然。a few far は不可（far は不可算の感覚）。"
+      },
+      {
+        id: "b9",
+        ja: "よかったら、そこまで案内しますよ。",
+        en: "I can show you the way if you'd like.",
+        alt: ["I can take you there if you'd like."],
+        note: "show A the way で「道案内する」。teach は使わない。if you'd like は「よろしければ」。"
+      },
+      {
+        id: "b10",
+        ja: "無事に着けるといいですね！",
+        en: "I hope you find it!",
+        alt: ["I hope you get there okay!"],
+        note: "hope のあとは未来のことでも現在形でよい。I hope you will find it. としなくてよい。"
+      }
+    ],
+    similar: []
+  };
+  var SEED_SETS = [SET_LESSON_03, SET_LESSON_04, SET_TOKKUN_01, SET_TOKKUN_02];
 
   /* 正答数の帯ごとの応援スタンプ（10問なら 〜5問 / 6〜9問 / 全問正解）。
      perfect は10問を一度も間違えずに通したときだけ */
