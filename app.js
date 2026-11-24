@@ -1526,6 +1526,9 @@
     root.innerHTML = SHELL;
     state = load();
     if (!getSet(state.currentSetId) && state.sets.length) state.currentSetId = state.sets[0].id;
+    /* 総合問題がまだ空なら、ここで10問引いておく（セットタブで 0/0 と出ないように） */
+    var mixSet = getSet(MIX_ID);
+    if (mixSet && !mixSet.basic.length) drawMix();
 
     root.addEventListener("click", onClick);
     root.addEventListener("keydown", function (e) {
