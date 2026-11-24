@@ -3,7 +3,8 @@
   "use strict";
 
   var KEY = "qq-shunkan-v1";
-  var FOCUS_THRESHOLD = 3; /* 誤答がこの回数以上で「重点復習」 */
+  var FOCUS_IN = 3;   /* 連続でこの回数まちがえると「重点復習」入り */
+  var FOCUS_OUT = 2;  /* 重点復習入りのあと、連続でこの回数正解すると外れる */
   var MIX_ID = "qq-mix";   /* 総合問題。中身は実行時に全セットから引く */
   var MIX_SIZE = 10;
 
@@ -469,6 +470,85 @@
     ],
     similar: []
   };
+  var SET_TOKKUN_03 = {
+    id: "qq-tokkun-03",
+    date: "2026-11-24",
+    teacher: "未記入",
+    title: "#3 特訓（駅・乗り場）",
+    basic: [
+      {
+        id: "b1",
+        ja: "3番乗り場に行ってください。",
+        en: "Please go to platform three.",
+        alt: ["Please go to platform 3."],
+        note: "platform three は名前のような扱いで the も序数の the third も付けない。"
+      },
+      {
+        id: "b2",
+        ja: "京都行きの電車は5番乗り場から出発します。",
+        en: "The train for Kyoto leaves from platform five.",
+        alt: ["The train to Kyoto departs from platform five."],
+        note: "行き先は for 〜（掲示や案内の定番）。出発は leave from。"
+      },
+      {
+        id: "b3",
+        ja: "急行電車に乗った方がいいですよ。",
+        en: "You should take the express train.",
+        alt: ["You'd better take the express."],
+        note: "乗り物を利用するは take。get on は「乗り込む」動作そのもの。"
+      },
+      {
+        id: "b4",
+        ja: "普通電車はすべての駅に停まります。",
+        en: "The local train stops at every station.",
+        alt: ["The local train stops at all the stations."],
+        note: "every のあとは単数 station。stop at 〜 で「〜に停車する」。"
+      },
+      {
+        id: "b5",
+        ja: "ここは違うホームです。",
+        en: "This is the wrong platform.",
+        alt: ["You're on the wrong platform."],
+        note: "「違う〜」は the wrong 〜。a wrong platform とは言わない。"
+      },
+      {
+        id: "b6",
+        ja: "ホームの反対側に行く必要があります。",
+        en: "You need to go to the other side of the platform.",
+        alt: ["You have to go to the opposite side."],
+        note: "2つのうちのもう一方は the other。another は「別のもう1つ」で意味が変わる。"
+      },
+      {
+        id: "b7",
+        ja: "電車は5分後に出発します。",
+        en: "The train leaves in five minutes.",
+        alt: ["The train is leaving in five minutes."],
+        note: "これからの「〜後」は in。after five minutes は不可。近い予定は現在形で表せる。"
+      },
+      {
+        id: "b8",
+        ja: "この電車はその駅には停まりません。",
+        en: "This train skips that station.",
+        alt: ["This train doesn't stop at that station."],
+        note: "skip で「通過する」。doesn't stop at 〜 でも同じ。"
+      },
+      {
+        id: "b9",
+        ja: "2番乗り場から電車に乗れます。",
+        en: "You can catch the train on platform two.",
+        alt: ["You can get the train from platform two."],
+        note: "乗り場は on platform two。catch は「間に合って乗る」。"
+      },
+      {
+        id: "b10",
+        ja: "次の電車は数分後に到着します。",
+        en: "The next train will arrive in a few minutes.",
+        alt: ["The next train arrives in a few minutes."],
+        note: "a few minutes は「数分」。a を落とすと「ほとんど時間がない」になる。"
+      }
+    ],
+    similar: []
+  };
   var SET_MIX = {
     id: "qq-mix",
     date: "",
@@ -477,7 +557,7 @@
     basic: [],
     similar: []
   };
-  var SEED_SETS = [SET_LESSON_03, SET_LESSON_04, SET_TOKKUN_01, SET_TOKKUN_02, SET_MIX];
+  var SEED_SETS = [SET_LESSON_03, SET_LESSON_04, SET_TOKKUN_01, SET_TOKKUN_02, SET_TOKKUN_03, SET_MIX];
 
   /* 正答数の帯ごとの応援スタンプ（10問なら 〜5問 / 6〜9問 / 全問正解）。
      perfect は10問を一度も間違えずに通したときだけ */
@@ -607,6 +687,9 @@
     var bucket = prog(setId)[step];
     var st = bucket[qid];
     if (!st) { st = bucket[qid] = { correct: 0, wrong: 0, cleared: false }; }
+    if (typeof st.runWrong !== "number") st.runWrong = 0;  /* 連続まちがい */
+    if (typeof st.runRight !== "number") st.runRight = 0;  /* 連続正解 */
+    if (typeof st.focus !== "boolean") st.focus = false;   /* 重点復習入りか */
     return st;
   }
 
@@ -761,7 +844,12 @@
     ["basic", "similar"].forEach(function (step) {
       (set[step] || []).forEach(function (q) {
         var st = qstat(setId, step, q.id);
-        if (st.wrong >= FOCUS_THRESHOLD) out.push({ step: step, q: q, wrong: st.wrong, cleared: st.cleared });
+        if (st.focus) {
+          out.push({
+            step: step, q: q, wrong: st.wrong, cleared: st.cleared,
+            left: Math.max(0, FOCUS_OUT - st.runRight)  /* あと何回連続正解で外れるか */
+          });
+        }
       });
     });
     out.sort(function (a, b) { return b.wrong - a.wrong; });
@@ -866,11 +954,12 @@
     var focus = focusItems(set.id);
     if (focus.length) {
       html += '<div class="card stack"><h3>重点復習</h3>' +
-        '<p class="lede" style="margin:0">' + FOCUS_THRESHOLD + '回以上つまずいた文。ここが伸びしろです。</p>' +
+        '<p class="lede" style="margin:0">' + FOCUS_IN + '回続けてつまずいた文。' +
+          FOCUS_OUT + '回続けて言えたら外れます。</p>' +
         '<ul class="focus-list">' +
         focus.slice(0, 6).map(function (f) {
           return "<li><span class=\"fj\">" + esc(f.q.ja) + "</span>" +
-            '<span class="fx">×' + f.wrong + "</span>" +
+            '<span class="fx">あと' + Math.max(1, f.left) + "回</span>" +
             '<span class="fe">' + esc(f.q.en) + "</span></li>";
         }).join("") +
         "</ul></div>";
@@ -1007,7 +1096,8 @@
       '<div class="card q-card">' +
         '<div class="tick-row" id="tickRow"><span class="tick"><i></i></span>' +
         '<span class="tick-label" id="tickLabel">3秒で言ってみる</span></div>' +
-        (st.wrong >= FOCUS_THRESHOLD ? '<div class="hint-chips"><span class="hint">重点復習 ×' + st.wrong + "</span></div>" : "") +
+        (st.focus ? '<div class="hint-chips"><span class="hint">重点復習　あと' +
+          Math.max(1, FOCUS_OUT - st.runRight) + '回連続正解で解除</span></div>' : "") +
         '<p class="ja-q">' + esc(q.ja) + "</p>" +
         '<div class="ans"' + (session.revealed ? "" : " hidden") + ">" +
           '<p class="en">' + esc(q.en) + "</p>" +
@@ -1060,8 +1150,14 @@
 
     if (ok) {
       st.correct++; st.cleared = true; session.correct++; d.correct++; cell.c++;
+      st.runWrong = 0;        /* 途中で言えたら連続まちがいは0に戻す */
+      st.runRight++;
+      if (st.focus && st.runRight >= FOCUS_OUT) { st.focus = false; st.runRight = 0; }
     } else {
       st.wrong++; st.cleared = false; session.wrong++; d.wrong++; cell.w++;
+      st.runRight = 0;
+      st.runWrong++;
+      if (st.runWrong >= FOCUS_IN) st.focus = true;
       session.missed.push(q.id);
     }
     state.lastStudied = t;
@@ -1259,11 +1355,12 @@
     html += '<div class="card stack"><h3>重点復習問題</h3>' +
       (allFocus.length
         ? '<ul class="focus-list">' + allFocus.slice(0, 12).map(function (f) {
-            return "<li><span class=\"fj\">" + esc(f.q.ja) + '</span><span class="fx">×' + f.wrong + "</span>" +
+            return "<li><span class=\"fj\">" + esc(f.q.ja) + '</span><span class="fx">あと' +
+              Math.max(1, f.left) + "回</span>" +
               '<span class="fe">' + esc(f.q.en) + "（" + esc(setDateLabel(f.set)) + "・" +
               (f.step === "basic" ? "基本" : "類似") + "）</span></li>";
           }).join("") + "</ul>"
-        : '<p class="empty">' + FOCUS_THRESHOLD + "回以上間違えた問題はまだありません。</p>") +
+        : '<p class="empty">' + FOCUS_IN + "回続けて間違えた問題はまだありません。</p>") +
       "</div>";
 
     html += '<div class="card stack">' +

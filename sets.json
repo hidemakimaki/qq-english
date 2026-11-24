@@ -550,6 +550,105 @@
       "similar": []
     },
     {
+      "id": "qq-tokkun-03",
+      "date": "2026-11-24",
+      "teacher": "未記入",
+      "title": "#3 特訓（駅・乗り場）",
+      "basic": [
+        {
+          "id": "b1",
+          "ja": "3番乗り場に行ってください。",
+          "en": "Please go to platform three.",
+          "alt": [
+            "Please go to platform 3."
+          ],
+          "note": "platform three は名前のような扱いで the も序数の the third も付けない。"
+        },
+        {
+          "id": "b2",
+          "ja": "京都行きの電車は5番乗り場から出発します。",
+          "en": "The train for Kyoto leaves from platform five.",
+          "alt": [
+            "The train to Kyoto departs from platform five."
+          ],
+          "note": "行き先は for 〜（掲示や案内の定番）。出発は leave from。"
+        },
+        {
+          "id": "b3",
+          "ja": "急行電車に乗った方がいいですよ。",
+          "en": "You should take the express train.",
+          "alt": [
+            "You'd better take the express."
+          ],
+          "note": "乗り物を利用するは take。get on は「乗り込む」動作そのもの。"
+        },
+        {
+          "id": "b4",
+          "ja": "普通電車はすべての駅に停まります。",
+          "en": "The local train stops at every station.",
+          "alt": [
+            "The local train stops at all the stations."
+          ],
+          "note": "every のあとは単数 station。stop at 〜 で「〜に停車する」。"
+        },
+        {
+          "id": "b5",
+          "ja": "ここは違うホームです。",
+          "en": "This is the wrong platform.",
+          "alt": [
+            "You're on the wrong platform."
+          ],
+          "note": "「違う〜」は the wrong 〜。a wrong platform とは言わない。"
+        },
+        {
+          "id": "b6",
+          "ja": "ホームの反対側に行く必要があります。",
+          "en": "You need to go to the other side of the platform.",
+          "alt": [
+            "You have to go to the opposite side."
+          ],
+          "note": "2つのうちのもう一方は the other。another は「別のもう1つ」で意味が変わる。"
+        },
+        {
+          "id": "b7",
+          "ja": "電車は5分後に出発します。",
+          "en": "The train leaves in five minutes.",
+          "alt": [
+            "The train is leaving in five minutes."
+          ],
+          "note": "これからの「〜後」は in。after five minutes は不可。近い予定は現在形で表せる。"
+        },
+        {
+          "id": "b8",
+          "ja": "この電車はその駅には停まりません。",
+          "en": "This train skips that station.",
+          "alt": [
+            "This train doesn't stop at that station."
+          ],
+          "note": "skip で「通過する」。doesn't stop at 〜 でも同じ。"
+        },
+        {
+          "id": "b9",
+          "ja": "2番乗り場から電車に乗れます。",
+          "en": "You can catch the train on platform two.",
+          "alt": [
+            "You can get the train from platform two."
+          ],
+          "note": "乗り場は on platform two。catch は「間に合って乗る」。"
+        },
+        {
+          "id": "b10",
+          "ja": "次の電車は数分後に到着します。",
+          "en": "The next train will arrive in a few minutes.",
+          "alt": [
+            "The next train arrives in a few minutes."
+          ],
+          "note": "a few minutes は「数分」。a を落とすと「ほとんど時間がない」になる。"
+        }
+      ],
+      "similar": []
+    },
+    {
       "id": "qq-mix",
       "date": "",
       "teacher": "未記入",
