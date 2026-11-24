@@ -4,6 +4,8 @@
 
   var KEY = "qq-shunkan-v1";
   var FOCUS_THRESHOLD = 3; /* 誤答がこの回数以上で「重点復習」 */
+  var MIX_ID = "qq-mix";   /* 総合問題。中身は実行時に全セットから引く */
+  var MIX_SIZE = 10;
 
   /* ============================================================
      収録セット（レッスンのふりかえりから作成 / 正本は sets.json）
@@ -467,7 +469,15 @@
     ],
     similar: []
   };
-  var SEED_SETS = [SET_LESSON_03, SET_LESSON_04, SET_TOKKUN_01, SET_TOKKUN_02];
+  var SET_MIX = {
+    id: "qq-mix",
+    date: "",
+    teacher: "未記入",
+    title: "総合問題",
+    basic: [],
+    similar: []
+  };
+  var SEED_SETS = [SET_LESSON_03, SET_LESSON_04, SET_TOKKUN_01, SET_TOKKUN_02, SET_MIX];
 
   /* 正答数の帯ごとの応援スタンプ（10問なら 〜5問 / 6〜9問 / 全問正解）。
      perfect は10問を一度も間違えずに通したときだけ */
@@ -526,7 +536,13 @@
       daily: {},
       lastStudied: null,
       cheerImage: null,
-      currentSetId: SEED_SETS[SEED_SETS.length - 1].id
+      currentSetId: (function () {
+        /* はじめて開いたときは総合問題ではなく、いちばん新しい通常のセット */
+        for (var i = SEED_SETS.length - 1; i >= 0; i--) {
+          if (!isMix(SEED_SETS[i].id)) return SEED_SETS[i].id;
+        }
+        return SEED_SETS[0].id;
+      })()
     };
   }
 
@@ -610,6 +626,44 @@
   }
 
   function hasStep(setId, step) { return stepTotal(setId, step) > 0; }
+
+  function isMix(setId) { return setId === MIX_ID; }
+
+  function setDateLabel(set) { return set.date || "総合"; }
+
+  /* 総合問題：ほかのセット全部からランダムに MIX_SIZE 問を引き直す */
+  function drawMix() {
+    var mix = getSet(MIX_ID);
+    if (!mix) return null;
+    var pool = [];
+    state.sets.forEach(function (s) {
+      if (s.id === MIX_ID) return;
+      ["basic", "similar"].forEach(function (step) {
+        (s[step] || []).forEach(function (q) {
+          pool.push({
+            id: s.id + "/" + step + "/" + q.id,
+            ja: q.ja, en: q.en,
+            alt: (q.alt || []).slice(),
+            note: q.note || ""
+          });
+        });
+      });
+    });
+    for (var i = pool.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+    }
+    mix.basic = pool.slice(0, MIX_SIZE);
+
+    /* 引いた10問は未クリアの状態から始める（正誤の回数はそのまま残す） */
+    var pg = prog(MIX_ID);
+    mix.basic.forEach(function (q) {
+      if (pg.basic[q.id]) pg.basic[q.id].cleared = false;
+    });
+    pg.lapCounted = false;
+    save();
+    return mix;
+  }
 
   /* 問題のある STEP がすべて埋まったか（類似のないセットは基本だけで判定） */
   function isSetCleared(setId) {
@@ -759,11 +813,13 @@
 
     if (session) { el.innerHTML = renderSession(); afterSessionRender(); return; }
 
+    var mix = isMix(set.id);
+    if (mix && !set.basic.length) drawMix();
     var twoSteps = hasStep(set.id, "similar");
     if (!twoSteps) ui.step = "basic";
     var html = twoSteps
       ? '<div class="steps">' + stepChip("basic", "STEP 1") + stepChip("similar", "STEP 2") + "</div>"
-      : '<div class="steps one">' + stepChip("basic", "特訓") + "</div>";
+      : '<div class="steps one">' + stepChip("basic", mix ? "総合" : "特訓") + "</div>";
 
     var step = ui.step;
     var locked = step === "similar" && !isStepCleared(set.id, "basic");
@@ -783,18 +839,25 @@
     } else {
       var cleared = total > 0 && remain === 0;
       html += '<div class="card stack">' +
-        "<div><h2>" + STEP_LABEL[step] + (cleared ? "・クリア済み" : "") + "</h2>" +
-        '<p class="lede">' + (cleared
-          ? "全問クリア。復習としてもう一度まわせます。"
-          : "日本語を見たら3秒以内に声に出す。言えたら「言えた」を押す。") + "</p></div>" +
+        "<div><h2>" + (mix ? "総合問題" : STEP_LABEL[step]) + (cleared ? "・クリア済み" : "") + "</h2>" +
+        '<p class="lede">' + (mix
+          ? "すべてのセットからランダムに" + MIX_SIZE + "問。引き直すたびに顔ぶれが変わります。"
+          : cleared
+            ? "全問クリア。復習としてもう一度まわせます。"
+            : "日本語を見たら3秒以内に声に出す。言えたら「言えた」を押す。") + "</p></div>" +
         '<div class="pills">' +
           '<span class="pill' + (cleared ? " done" : "") + '">クリア ' + done + "/" + total + "</span>" +
           '<span class="pill">のべ解答 ' + tries + "</span>" +
           '<span class="pill">正解率 ' + pct(hits, tries) + "%</span>" +
         "</div>" +
-        '<button class="btn primary big" data-act="start" data-mode="remain">' +
-          (cleared ? "10問を復習する" : "練習をはじめる（未正解 " + remain + " 問）") + "</button>" +
-        (cleared ? "" : '<button class="btn ghost" data-act="start" data-mode="all">' + total + "問すべて通す</button>") +
+        (mix
+          ? (cleared
+              ? '<button class="btn primary big" data-act="start" data-mode="all">新しい' + MIX_SIZE + '問をひく</button>'
+              : '<button class="btn primary big" data-act="start" data-mode="remain">練習をはじめる（未正解 ' + remain + ' 問）</button>' +
+                '<button class="btn ghost" data-act="start" data-mode="all">' + MIX_SIZE + '問を引き直す</button>')
+          : '<button class="btn primary big" data-act="start" data-mode="remain">' +
+              (cleared ? "10問を復習する" : "練習をはじめる（未正解 " + remain + " 問）") + "</button>" +
+            (cleared ? "" : '<button class="btn ghost" data-act="start" data-mode="all">' + total + "問すべて通す</button>")) +
         "</div>";
     }
 
@@ -823,6 +886,8 @@
   function startSession(step, mode) {
     var set = currentSet();
     if (!set) return;
+    /* 総合問題は「すべて通す」で新しい10問を引く */
+    if (isMix(set.id) && (mode === "all" || !set.basic.length)) drawMix();
     var all = (set[step] || []).slice();
     if (!all.length) { toast("この STEP に問題がありません。"); return; }
 
@@ -906,7 +971,9 @@
         html += '<button class="btn primary big" data-act="start" data-mode="remain" data-step="similar">STEP 2 の類似問題へ</button>';
       } else if (session.lapAchieved) {
         html += '<button class="btn primary big" data-act="start" data-mode="all" data-step="basic">' +
-          (session.lapAchieved + 1) + '周目をはじめる（STEP 1 から）</button>';
+          (isMix(session.setId)
+            ? "新しい" + MIX_SIZE + "問をひく"
+            : session.lapAchieved + 1 + "周目をはじめる（STEP 1 から）") + '</button>';
       } else {
         html += '<button class="btn primary big" data-act="start" data-mode="all">もう一度 10 問まわす</button>';
       }
@@ -1116,7 +1183,7 @@
       var prev = hist.length > 1 ? hist[hist.length - 2] : null;
       var d = (last && prev) ? last.rate - prev.rate : null;
       return '<div class="prog-row">' +
-        '<div class="pr-top"><span class="date">' + esc(s.date) + '</span>' +
+        '<div class="pr-top"><span class="date">' + esc(setDateLabel(s)) + '</span>' +
           '<span class="t">' + esc(s.title || "レッスンセット") + '</span></div>' +
         '<div class="pr-steps">' +
           stepMeter("基本", clearedCount(s.id, "basic"), stepTotal(s.id, "basic")) +
@@ -1193,7 +1260,7 @@
       (allFocus.length
         ? '<ul class="focus-list">' + allFocus.slice(0, 12).map(function (f) {
             return "<li><span class=\"fj\">" + esc(f.q.ja) + '</span><span class="fx">×' + f.wrong + "</span>" +
-              '<span class="fe">' + esc(f.q.en) + "（" + esc(f.set.date) + "・" +
+              '<span class="fe">' + esc(f.q.en) + "（" + esc(setDateLabel(f.set)) + "・" +
               (f.step === "basic" ? "基本" : "類似") + "）</span></li>";
           }).join("") + "</ul>"
         : '<p class="empty">' + FOCUS_THRESHOLD + "回以上間違えた問題はまだありません。</p>") +
@@ -1225,7 +1292,10 @@
 
   function renderSets() {
     var el = document.getElementById("v-sets");
-    var sets = state.sets.slice().sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+    var sets = state.sets.slice().sort(function (a, b) {
+      if (isMix(a.id) !== isMix(b.id)) return isMix(a.id) ? -1 : 1; /* 総合問題は先頭 */
+      return String(b.date).localeCompare(String(a.date));
+    });
     var html = '<div class="card"><h2>問題セット</h2>' +
       '<p class="lede">日付ごとに管理しています。タップで切り替え。過去のセットにもいつでも戻れます。</p></div>';
 
@@ -1235,7 +1305,7 @@
       var cur = s.id === state.currentSetId;
       var confirming = ui.confirm === "del:" + s.id;
       return '<div class="set-item" data-current="' + (cur ? "1" : "0") + '">' +
-        '<div class="set-head"><span class="date">' + esc(s.date || "----") + "</span>" +
+        '<div class="set-head"><span class="date">' + esc(setDateLabel(s)) + "</span>" +
         '<span class="t">' + esc(s.title || "レッスンセット") + "</span>" +
         (cur ? '<span class="pill done">使用中</span>' : "") + "</div>" +
         '<div class="set-meta">講師: ' + esc(s.teacher || "未記入") + "　/　ID: " + esc(s.id) + "</div>" +
@@ -1334,7 +1404,11 @@
   function render() {
     var set = currentSet();
     var label = document.getElementById("setLabel");
-    if (label) label.textContent = set ? (set.date + "　" + (set.title || "")) : "セットなし";
+    if (label) {
+      label.textContent = set
+        ? ((set.date ? set.date + "　" : "") + (set.title || ""))
+        : "セットなし";
+    }
 
     var chip = document.getElementById("todayChip");
     if (chip) {
