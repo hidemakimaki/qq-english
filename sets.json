@@ -649,6 +649,196 @@
       "similar": []
     },
     {
+      "id": "qq-lesson-05",
+      "date": "2026-11-25",
+      "teacher": "未記入",
+      "title": "第5回 ふりかえり",
+      "basic": [
+        {
+          "id": "b1",
+          "ja": "どうして知ってるの？",
+          "en": "How did you know that?",
+          "alt": [
+            "How do you know that?"
+          ],
+          "note": "Why do you know the things? と言っていた。「どうやって知ったの？」は why ではなく how。知ったのは過去なので did。"
+        },
+        {
+          "id": "b2",
+          "ja": "すみません、何をすればいいですか？",
+          "en": "Sorry, what should I do?",
+          "alt": [
+            "Sorry, what do I need to do?"
+          ],
+          "note": "I don't do it. と言っていた。これだと「私はやりません」と断る意味になる。"
+        },
+        {
+          "id": "b3",
+          "ja": "質問してもいいですか？",
+          "en": "Can I ask a question?",
+          "alt": [
+            "May I ask a question?"
+          ],
+          "note": "Can I ask some question? と言っていた。question は数えられる名詞なので、1つなら a、いくつかなら some questions。"
+        },
+        {
+          "id": "b4",
+          "ja": "さっき absolutely と言いましたよね。どういう意味ですか？",
+          "en": "You said \"absolutely.\" What does it mean?",
+          "alt": [
+            "You said \"absolutely.\" What does \"absolutely\" mean?"
+          ],
+          "note": "Saad said absolutely. と崩れていた。相手の言葉を聞き返すときは You said \"〜.\" で始める。"
+        },
+        {
+          "id": "b5",
+          "ja": "Do you want と Do you like は同じ意味ですか？",
+          "en": "Is \"Do you want\" the same as \"Do you like\"?",
+          "alt": [
+            "Does \"Do you want\" mean the same as \"Do you like\"?"
+          ],
+          "note": "何度も言い直していた。Is A the same as B? の形を先に決めてから話し始める。"
+        },
+        {
+          "id": "b6",
+          "ja": "コーヒーと紅茶、どちらになさいますか？",
+          "en": "Would you like coffee or tea?",
+          "alt": [
+            "Do you want coffee or tea?"
+          ],
+          "note": "選択疑問文。答えは Yes/No ではなく I'd like coffee, please. のように選ぶ。お店で勧めるなら Would you like 〜? が自然。coffee は「カフェ」ではなく「コ（ー）フィー」。"
+        },
+        {
+          "id": "b7",
+          "ja": "毎朝コーヒーを1杯飲みます。",
+          "en": "I drink a cup of coffee every morning.",
+          "alt": [
+            "I have a cup of coffee every morning."
+          ],
+          "note": "a cup of cafe と言っていた。cafe は「喫茶店」。飲み物は coffee。"
+        },
+        {
+          "id": "b8",
+          "ja": "ハリー・ポッターの本を読みました。その本はとても面白かったです。",
+          "en": "I read a Harry Potter book. The book was very exciting.",
+          "alt": [
+            "I read a Harry Potter book. It was really exciting."
+          ],
+          "note": "I read the book of Harry Potter と言っていた。初めて話題に出すので a、2回目から the。「〜の本」は a 〜 book が自然。"
+        },
+        {
+          "id": "b9",
+          "ja": "話すときに a と the のどちらを使うか選ぶのが難しいです。",
+          "en": "It's hard to choose between \"a\" and \"the\" when I speak.",
+          "alt": [
+            "It's difficult to choose between \"a\" and \"the\" when I'm speaking."
+          ],
+          "note": "difficult が2回入って文が崩れていた。It's hard to 〜 when I speak. の形で覚える。"
+        },
+        {
+          "id": "b10",
+          "ja": "理解はできましたが、話すときに使うのが難しいです。",
+          "en": "I understand, but it's hard to use it when I speak.",
+          "alt": [
+            "I get it, but it's hard to use when I speak."
+          ],
+          "note": "I understood, but I think it's difficult to speak English. と言っていた。「英語を話すのが難しい」と話が大きくなる。今わかっていることは現在形の understand。"
+        }
+      ],
+      "similar": [
+        {
+          "id": "s1",
+          "ja": "どうして私の名前を知ってるの？",
+          "en": "How did you know my name?",
+          "alt": [
+            "How do you know my name?"
+          ],
+          "note": "基本1と同じ型。How did you know 〜?"
+        },
+        {
+          "id": "s2",
+          "ja": "すみません、次は何をすればいいですか？",
+          "en": "Sorry, what should I do next?",
+          "alt": [
+            "Sorry, what do I do next?"
+          ],
+          "note": "基本2と同じ型。what should I do に next を足すだけ。"
+        },
+        {
+          "id": "s3",
+          "ja": "いくつか質問してもいいですか？",
+          "en": "Can I ask some questions?",
+          "alt": [
+            "May I ask a few questions?"
+          ],
+          "note": "基本3の複数版。some のあとは questions と複数形にする。"
+        },
+        {
+          "id": "s4",
+          "ja": "さっき shortly と言いましたよね。どういう意味ですか？",
+          "en": "You said \"shortly.\" What does it mean?",
+          "alt": [
+            "You said \"shortly.\" What does \"shortly\" mean?"
+          ],
+          "note": "基本4と同じ型。shortly は「まもなく」。Your order will be served shortly.（ご注文はまもなくお持ちします）"
+        },
+        {
+          "id": "s5",
+          "ja": "dine in は eat in と同じ意味ですか？",
+          "en": "Is \"dine in\" the same as \"eat in\"?",
+          "alt": [
+            "Does \"dine in\" mean the same as \"eat in\"?"
+          ],
+          "note": "基本5と同じ型。Is A the same as B? dine in の反対は take out / take away。"
+        },
+        {
+          "id": "s6",
+          "ja": "ハムサンドと卵サンド、どちらになさいますか？",
+          "en": "Would you like a ham or an egg sandwich?",
+          "alt": [
+            "Do you want a ham sandwich or an egg sandwich?"
+          ],
+          "note": "基本6と同じ選択疑問文。ham の前は a、egg は母音で始まるので an。"
+        },
+        {
+          "id": "s7",
+          "ja": "砂糖なしのコーヒーをお願いします。",
+          "en": "I'll have coffee without sugar, please.",
+          "alt": [
+            "Coffee without sugar, please."
+          ],
+          "note": "今日の会話文。注文は I'll have 〜, please. coffee の発音に注意。"
+        },
+        {
+          "id": "s8",
+          "ja": "公園で犬を見ました。その犬はとてもかわいかったです。",
+          "en": "I saw a dog in the park. The dog was very cute.",
+          "alt": [
+            "I saw a dog in the park. It was really cute."
+          ],
+          "note": "基本8と同じルール。初めて出すときは a、2回目からは the。"
+        },
+        {
+          "id": "s9",
+          "ja": "公園で犬を何匹か見ました。",
+          "en": "I saw dogs in the park.",
+          "alt": [
+            "I saw some dogs in the park."
+          ],
+          "note": "複数形でばくぜんと言うときは冠詞を付けない（無冠詞）。a dogs とは言わない。"
+        },
+        {
+          "id": "s10",
+          "ja": "説明が分かりやすかったです。ありがとうございました。",
+          "en": "Your explanation was easy to understand. Thank you.",
+          "alt": [
+            "You explained it really clearly. Thank you."
+          ],
+          "note": "レッスンの最後のひとこと。I can easily understand. と言っていたが、これだと「私は簡単に理解できる人です」に聞こえる。"
+        }
+      ]
+    },
+    {
       "id": "qq-mix",
       "date": "",
       "teacher": "未記入",
