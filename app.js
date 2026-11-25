@@ -699,7 +699,85 @@
       }
     ]
   };
-
+  var SET_SPEAK_01 = {
+    id: "qq-speak-01",
+    date: "2026-11-25",
+    teacher: "未記入",
+    title: "#1 speak特訓（旅行の相談）",
+    basic: [
+      {
+        id: "b1",
+        ja: "家族向けのホテルのほうがいいと思っています。",
+        en: "I'm leaning toward a family hotel.",
+        alt: ["I'm leaning towards a family hotel."],
+        note: "lean toward 〜 で「〜に気持ちが傾いている」。まだ決めきっていないときの言い方。"
+      },
+      {
+        id: "b2",
+        ja: "遊び場があるホテルにしようと思います。",
+        en: "I think I'll go with the hotel with a play area.",
+        alt: ["I'll probably go with the hotel that has a play area."],
+        note: "go with 〜 で「〜に決める」。2つめの with は「〜が付いている」の意味。"
+      },
+      {
+        id: "b3",
+        ja: "この2つの旅行先で迷っています。",
+        en: "I'm torn between these two vacation spots.",
+        alt: ["I can't decide between these two vacation spots."],
+        note: "be torn between A and B で「AとBで心が引き裂かれる＝迷う」。torn は tear の過去分詞。"
+      },
+      {
+        id: "b4",
+        ja: "妻の好きな場所を選ぶべきでしょうか。",
+        en: "Should I choose my wife's favorite place?",
+        alt: ["Do you think I should choose my wife's favorite place?"],
+        note: "Should I 〜? で相談する形。my wife favorite ではなく 's を付けて my wife's。"
+      },
+      {
+        id: "b5",
+        ja: "ホテルにするか旅館にするか分かりません。",
+        en: "I don't know whether to stay at a hotel or a ryokan.",
+        alt: ["I'm not sure whether to stay at a hotel or a ryokan."],
+        note: "whether to 〜 or ... で「〜すべきか…すべきか」。if to とは言えない。"
+      },
+      {
+        id: "b6",
+        ja: "やっぱり、旅館に泊まろうと思います。",
+        en: "On second thought, I think I'll stay at a ryokan.",
+        alt: ["Actually, I think I'll stay at a ryokan."],
+        note: "On second thought で「やっぱり／考え直すと」。thought は単数のまま。"
+      },
+      {
+        id: "b7",
+        ja: "子どもたちにとってどちらが良いか分かりません。",
+        en: "I'm not sure which one is better for the kids.",
+        alt: ["I don't know which one is better for the kids."],
+        note: "I'm not sure のあとに疑問詞の文を続けるときは、ふつうの語順（which one is）に戻す。"
+      },
+      {
+        id: "b8",
+        ja: "温泉のあるほうを予約しようかと考えています。",
+        en: "I'm thinking of booking the one with a hot spring.",
+        alt: ["I'm thinking about booking the one with a hot spring."],
+        note: "think of ＋ -ing で「〜しようかと考え中」。the one は前に出た名詞の代わり。"
+      },
+      {
+        id: "b9",
+        ja: "まず妻と相談させてください。",
+        en: "Let me talk it over with my wife first.",
+        alt: ["Let me discuss it with my wife first."],
+        note: "talk it over with 〜 で「〜とよく相談する」。discuss は about を付けない。"
+      },
+      {
+        id: "b10",
+        ja: "どちらにしても、早めに予約したいです。",
+        en: "Either way, I want to book it soon.",
+        alt: ["Either way, I'd like to book it soon."],
+        note: "either way で「どちらにしても」。both ways とは言わない。"
+      }
+    ],
+    similar: []
+  };
   var SET_MIX = {
     id: "qq-mix",
     date: "",
@@ -708,7 +786,7 @@
     basic: [],
     similar: []
   };
-  var SEED_SETS = [SET_LESSON_03, SET_LESSON_04, SET_TOKKUN_01, SET_TOKKUN_02, SET_TOKKUN_03, SET_LESSON_05, SET_MIX];
+  var SEED_SETS = [SET_LESSON_03, SET_LESSON_04, SET_TOKKUN_01, SET_TOKKUN_02, SET_TOKKUN_03, SET_LESSON_05, SET_SPEAK_01, SET_MIX];
 
   /* 正答数の帯ごとの応援スタンプ（10問なら 〜5問 / 6〜9問 / 全問正解）。
      perfect は10問を一度も間違えずに通したときだけ */
