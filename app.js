@@ -1634,7 +1634,8 @@
         '<div class="set-head"><span class="date">' + esc(setDateLabel(s)) + "</span>" +
         '<span class="t">' + esc(s.title || "レッスンセット") + "</span>" +
         (cur ? '<span class="pill done">使用中</span>' : "") + "</div>" +
-        '<div class="set-meta">講師: ' + esc(s.teacher || "未記入") + "　/　ID: " + esc(s.id) + "</div>" +
+        (s.teacher && s.teacher !== "未記入"
+          ? '<div class="set-meta">講師: ' + esc(s.teacher) + "</div>" : "") +
         '<div class="pills">' +
           '<span class="pill' + (bt && bc === bt ? " done" : "") + '">基本 ' + bc + "/" + bt + "</span>" +
           (stt ? '<span class="pill' + (sc === stt ? " done" : "") + '">類似 ' + sc + "/" + stt + "</span>" : "") +
