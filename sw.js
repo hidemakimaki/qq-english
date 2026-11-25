@@ -1,5 +1,5 @@
 /* 瞬間英作文ドリル — オフライン用 service worker */
-var CACHE = "qq-shunkan-v19";
+var CACHE = "qq-shunkan-v20";
 var ASSETS = [
   "standalone.html",
   "styles.css",
@@ -42,30 +42,60 @@ self.addEventListener("activate", function (e) {
   );
 });
 
+/* HTML・CSS・JS・JSON はネットを先に見る（更新を1回の読み込みで反映するため）。
+   画像などはキャッシュ優先。どちらもオフライン時はキャッシュにフォールバックする */
+var CODE = /\.(?:html|css|js|json)$/i;
+var NET_TIMEOUT = 3000;
+
+function fromNetwork(req) {
+  return new Promise(function (resolve, reject) {
+    var settled = false;
+    var timer = setTimeout(function () {
+      if (!settled) { settled = true; reject(new Error("timeout")); }
+    }, NET_TIMEOUT);
+    /* no-cache でブラウザのHTTPキャッシュを素通りさせ、必ずサーバーに確認する */
+    fetch(req, { cache: "no-cache" }).then(function (res) {
+      if (settled) return;
+      settled = true; clearTimeout(timer); resolve(res);
+    }, function (err) {
+      if (settled) return;
+      settled = true; clearTimeout(timer); reject(err);
+    });
+  });
+}
+
+function save(req, res) {
+  if (res && res.ok) {
+    var copy = res.clone();
+    caches.open(CACHE).then(function (c) { c.put(req, copy); });
+  }
+  return res;
+}
+
 self.addEventListener("fetch", function (e) {
   var req = e.request;
   if (req.method !== "GET") return;
   var url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
+  if (req.mode === "navigate" || CODE.test(url.pathname)) {
+    e.respondWith(
+      fromNetwork(req)
+        .then(function (res) { return save(req, res); })
+        .catch(function () {
+          return caches.match(req).then(function (hit) {
+            return hit || caches.match("standalone.html");
+          });
+        })
+    );
+    return;
+  }
+
   e.respondWith(
     caches.match(req).then(function (hit) {
-      if (hit) {
-        /* 裏側で更新しておく */
-        fetch(req).then(function (res) {
-          if (res && res.ok) caches.open(CACHE).then(function (c) { c.put(req, res.clone()); });
-        }).catch(function () { /* オフライン時は何もしない */ });
-        return hit;
-      }
-      return fetch(req).then(function (res) {
-        if (res && res.ok) {
-          var copy = res.clone();
-          caches.open(CACHE).then(function (c) { c.put(req, copy); });
-        }
-        return res;
-      }).catch(function () {
-        return caches.match("standalone.html");
-      });
+      if (hit) return hit;
+      return fetch(req).then(function (res) { return save(req, res); })
+        .catch(function () { return caches.match("standalone.html"); });
     })
   );
 });
