@@ -1877,3 +1877,4 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();
+/* ワンリロード確認用マーカー: SWTEST-A */
