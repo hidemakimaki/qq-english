@@ -938,6 +938,196 @@
       "similar": []
     },
     {
+      "id": "qq-lesson-06",
+      "date": "2026-11-27",
+      "teacher": "未記入",
+      "title": "第6回 ふりかえり",
+      "basic": [
+        {
+          "id": "b1",
+          "ja": "母音の音の前では an を使います。たとえば an apple や an hour です。",
+          "en": "We use \"an\" before a vowel sound, like \"an apple\" and \"an hour.\"",
+          "alt": [
+            "We use \"an\" before vowel sounds, for example \"an apple\" or \"an hour.\""
+          ],
+          "note": "I used an when the word a, i, o, u, e. と言っていた。文に動詞がない。文字ではなく「音」で選ぶ。hour は h を読まないので an。"
+        },
+        {
+          "id": "b2",
+          "ja": "仕事では制服を着ます。",
+          "en": "I wear a uniform at work.",
+          "alt": [
+            "I wear a uniform for work."
+          ],
+          "note": "a か an か迷っていた。uniform は u で始まるが「ユ」の音なので a。"
+        },
+        {
+          "id": "b3",
+          "ja": "私は大学の助教です。",
+          "en": "I'm an assistant professor at a university.",
+          "alt": [
+            "I work as an assistant professor at a university."
+          ],
+          "note": "in university と言っていた。「大学で」は at a university。university も「ユ」の音なので a。"
+        },
+        {
+          "id": "b4",
+          "ja": "心理学とコミュニケーション学を教えています。",
+          "en": "I teach psychology and communication studies.",
+          "alt": [
+            "I teach psychology and communication."
+          ],
+          "note": "My major is psychology / I handle a communication study と言っていた。教えている科目は I teach 〜。communication studies は複数形で a は付けない。"
+        },
+        {
+          "id": "b5",
+          "ja": "職業の前に a を付けるとは知りませんでした。",
+          "en": "I didn't know we use \"a\" before jobs.",
+          "alt": [
+            "I didn't know we put \"a\" before jobs."
+          ],
+          "note": "I haven't known use to using using for job. と言っていた。「知らなかった」は I didn't know 〜。"
+        },
+        {
+          "id": "b6",
+          "ja": "英語は読めますが、うまく話せません。",
+          "en": "I can read English, but I can't speak it well.",
+          "alt": [
+            "I can read English, but speaking is hard for me."
+          ],
+          "note": "I can read some books but I can't speak English. と言っていた。read と speak の目的語を English にそろえる。"
+        },
+        {
+          "id": "b7",
+          "ja": "鉛筆を持っています。お気に入りの鉛筆です。",
+          "en": "I have a pencil. It's my favorite pencil.",
+          "alt": [
+            "I have a pencil. It's my favorite."
+          ],
+          "note": "The pencil is very favorite thing. と言っていた。favorite に very は付けない。my favorite 〜 の形。"
+        },
+        {
+          "id": "b8",
+          "ja": "彼は会社でいちばん力のある社員です。",
+          "en": "He is the most powerful worker in the company.",
+          "alt": [
+            "He's the most powerful worker at the company."
+          ],
+          "note": "最上級を作れず He is a powerful worker. と言っていた。長い形容詞の最上級は the most 〜。"
+        },
+        {
+          "id": "b9",
+          "ja": "公園を歩き回りました。",
+          "en": "I walked around the park.",
+          "alt": [
+            "I took a walk around the park."
+          ],
+          "note": "I walked around in the park. と言っていた。around があれば in は不要。"
+        },
+        {
+          "id": "b10",
+          "ja": "息子はギターを弾きたがっています。",
+          "en": "My son wants to play the guitar.",
+          "alt": [
+            "My son would like to play the guitar."
+          ],
+          "note": "My son wanna play と言っていた。主語が my son（三人称）なので wants to。楽器には the。"
+        }
+      ],
+      "similar": [
+        {
+          "id": "s1",
+          "ja": "1時間待ちました。",
+          "en": "I waited for an hour.",
+          "alt": [
+            "I waited an hour."
+          ],
+          "note": "基本1と同じルール。hour は h を読まず「アワー」と母音で始まるので an。"
+        },
+        {
+          "id": "s2",
+          "ja": "彼女は大学生です。",
+          "en": "She is a university student.",
+          "alt": [
+            "She's a university student."
+          ],
+          "note": "基本2・3と同じ。university は「ユ」の音なので a。"
+        },
+        {
+          "id": "s3",
+          "ja": "妻は臨床心理士として働いています。",
+          "en": "My wife works as a clinical psychologist.",
+          "alt": [
+            "My wife is a clinical psychologist."
+          ],
+          "note": "職業の前には a / an。今日のレッスンで言えた文（as a counselor）の言い換え。"
+        },
+        {
+          "id": "s4",
+          "ja": "週に2回、英語を教えています。",
+          "en": "I teach English twice a week.",
+          "alt": [
+            "I teach English two times a week."
+          ],
+          "note": "基本4と同じく I teach ＋科目。教科名には a も the も付けない。"
+        },
+        {
+          "id": "s5",
+          "ja": "hour の前に an を付けるとは知りませんでした。",
+          "en": "I didn't know we use \"an\" before \"hour.\"",
+          "alt": [
+            "I didn't know \"hour\" takes \"an.\""
+          ],
+          "note": "基本5と同じ型。I didn't know 〜。"
+        },
+        {
+          "id": "s6",
+          "ja": "月がきれいですね。",
+          "en": "The moon looks beautiful today.",
+          "alt": [
+            "The moon is beautiful tonight."
+          ],
+          "note": "唯一のものには the（the moon / the earth / the sun）。"
+        },
+        {
+          "id": "s7",
+          "ja": "彼女はクラスでいちばん優秀な学生です。",
+          "en": "She is the best student in the class.",
+          "alt": [
+            "She's the best student in her class."
+          ],
+          "note": "基本8と同じ最上級。good - better - best と形が変わる。最上級には the。"
+        },
+        {
+          "id": "s8",
+          "ja": "空港で彼女を降ろしました。",
+          "en": "I dropped her off at the airport.",
+          "alt": [
+            "I dropped her off at the airport this morning."
+          ],
+          "note": "よく行く場所には the（the airport / the park / the bank）。"
+        },
+        {
+          "id": "s9",
+          "ja": "娘はバイオリンを弾きます。",
+          "en": "My daughter plays the violin.",
+          "alt": [
+            "My daughter plays violin."
+          ],
+          "note": "基本10と同じ。楽器には the。主語が三人称なので plays。"
+        },
+        {
+          "id": "s10",
+          "ja": "ひであきです。ヒデと呼んでください。",
+          "en": "I'm Hideaki. Please call me Hide.",
+          "alt": [
+            "My name is Hideaki. You can call me Hide."
+          ],
+          "note": "自己紹介のひとこと。名前を聞き返されていたので、最初に呼び方まで伝えておく。"
+        }
+      ]
+    },
+    {
       "id": "qq-mix",
       "date": "",
       "teacher": "未記入",

@@ -9,7 +9,7 @@ iPhone Safari 向けの瞬間英作文トレーニングアプリ。
 | `standalone.html` | ホーム画面追加（PWA）用のページ。これを開く |
 | `page.html` | 旧アーティファクト用の最小ページ・未使用（アーティファクト版は 2026-11-23 に削除） |
 | `styles.css` | スタイル（ライト／ダーク両対応） |
-| `app.js` | アプリ本体。第3回・第4回・第5回の3セット（各 基本10問＋類似10問）を同梱 |
+| `app.js` | アプリ本体。第3回〜第6回の4セット（各 基本10問＋類似10問）を同梱 |
 | `sets.json` | 収録セットの正本。`app.js` の該当部分はここから生成する |
 | `cheer/` | 応援スタンプ。帯ごと（low 4枚 / mid 3枚 / high 3枚 / perfect 4枚） |
 | `manifest.json` / `sw.js` / `icon-*.png` / `apple-touch-icon.png` | PWA・オフライン用（`icon.svg` は旧アイコン・未使用） |
